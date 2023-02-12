@@ -181,7 +181,19 @@ const styles = StyleSheet.create({
   },
   userNameDiv: {
     marginTop: "20%",
-    marginLeft: "-93%",
+    marginLeft: "-30%",
+  },
+  userName: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginTop: "5%",
+    marginLeft: "20%",
+    color: "black",
+    position: "absolute",
+    shadowColor: "white",
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
   },
   sideBaruserName: {
     fontSize: 15,
@@ -220,10 +232,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
-    width: "14%",
+    width: "15%",
     height: 40,
     marginLeft: "40.65%",
-    top: "10.7%",
+    top: "12.7%",
     backgroundColor: "white",
     borderRadius: "8%",
   },
@@ -244,6 +256,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 3, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
+  },
+  circle3: {
+    height: 85,
+    width: 85,
+    backgroundColor: "white",
+    borderRadius: 50,
+    // marginLeft: 45,
+    marginTop: 130,
   },
 });
 {
