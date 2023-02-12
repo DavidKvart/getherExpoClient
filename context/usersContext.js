@@ -165,7 +165,6 @@ const UserProvider = ({ children }) => {
         let result = await axios.post(`https://gethersocketserver.onrender.com/users/signup`, finalUser);
         if (result.data) {
           let answer = await updateUserLocaition(result.data._id);
-
           setUser(result.data);
           AsyncStorage.setItem("token", result.headers["x-auth-token"]);
 
@@ -226,7 +225,6 @@ const UserProvider = ({ children }) => {
       let result = await axios.put(url, locaition);
     }
   };
-
   const changePassword = async (password, userID) => {
     try {
       let url = `https://gethersocketserver.onrender.com/users/password/${userID}`;
