@@ -17,6 +17,7 @@ const UserProvider = ({ children }) => {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const [userIDforreset, setuserIDforreset] = useState("");
+  const [finished, setFinished] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
   const [deviceLocaition, setDevicelocaition] = useState({
@@ -106,14 +107,18 @@ const UserProvider = ({ children }) => {
         data,
         deviceToken,
       });
-
-      let answer = await updateUserLocaition(result.data._id);
       if (result.data) {
+        setUser(result.data);
+
+        let answer = await updateUserLocaition(result.data._id);
+
         let result = await axios.post(`https://gethersocketserver.onrender.com/users/login`, {
           data,
           deviceToken,
         });
+
         setUser(result.data);
+        setFinished(true);
 
         AsyncStorage.setItem("token", result.headers["x-auth-token"]);
         return true;
@@ -127,7 +132,6 @@ const UserProvider = ({ children }) => {
   };
   const validateId = async (id) => {
     try {
-      let answer = await updateUserLocaition(id);
       let deviceToken = await registerForPushNotificationsAsync();
       let fullUrl = `https://gethersocketserver.onrender.com/users/validate/` + id;
 
@@ -135,6 +139,9 @@ const UserProvider = ({ children }) => {
       if (result.data) {
         setUser(result.data);
         AsyncStorage.setItem("token", result.headers["x-auth-token"]);
+        let answer = await updateUserLocaition(id);
+        setFinished(true);
+        console.log("user locaition updated");
         return true;
       } else {
         return false;
@@ -164,10 +171,10 @@ const UserProvider = ({ children }) => {
         console.log(finalUser);
         let result = await axios.post(`https://gethersocketserver.onrender.com/users/signup`, finalUser);
         if (result.data) {
-          let answer = await updateUserLocaition(result.data._id);
           setUser(result.data);
           AsyncStorage.setItem("token", result.headers["x-auth-token"]);
-
+          let answer = await updateUserLocaition(result.data._id);
+          setFinished(true);
           return true;
         } else {
           return false;
@@ -183,6 +190,7 @@ const UserProvider = ({ children }) => {
   const signOut = () => {
     AsyncStorage.removeItem("token")
       .then((res) => {
+        setFinished(false);
         console.log(res);
       })
       .catch((err) => {
@@ -257,6 +265,7 @@ const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user,
+        finished,
         userIDforreset,
         deviceLocaition,
         login,

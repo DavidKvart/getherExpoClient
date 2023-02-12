@@ -7,13 +7,14 @@ import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
 import { UserContext } from "./../../../context/usersContext";
 import { EventContext } from "../../../context/eventContexts";
+import Loading from "../auth/loading";
 import CheckBoxComponent from "./small/checkBox";
 import CheckBoxComponentContacts from "./small/sendSMS";
 export default function AddFreinds() {
   const navigation = useNavigation();
   const [users, setUsers] = useState("");
-  const { addFriends } = useContext(EventContext);
-  const { getAllUsers, user } = useContext(UserContext);
+  const { addFriends, event } = useContext(EventContext);
+  const { getAllUsers, user, finished, sleep } = useContext(UserContext);
 
   const scrollRef = useRef();
   const [usersSelected, setUsersSelected] = useState([]);
@@ -36,34 +37,37 @@ export default function AddFreinds() {
         if (data.length > 0) {
           let listOfUsers = await getAllUsers();
 
-          let index = listOfUsers.findIndex((u) => u._id == user._id);
-          listOfUsers.splice(index, 1);
+          if (event.users.length > 0 && listOfUsers) {
+            event.users.map((friend) => {
+              let index = listOfUsers.findIndex((u) => friend._id == u._id);
+              listOfUsers.splice(index, 1);
+            });
+          } else {
+            let index = listOfUsers.findIndex((u) => u._id == user._id);
+            listOfUsers.splice(index, 1);
+          }
 
-          if (listOfUsers) {
-            for (let i = 0; i < listOfUsers.length; i++) {
-              for (let j = 0; j < listOfUsers.length; j++) {
-                if (data[j]?.phoneNumbers[0]?.digits && data[j]?.phoneNumbers[0]?.digits == listOfUsers[i].phone) {
-                  temp.push(j);
-                } else if (data[j].phoneNumbers[0]?.number && data[j].phoneNumbers[0]?.number == listOfUsers[i].phone) {
-                  temp.push(j);
-                }
-              }
-            }
-            console.log("-----");
-            console.log(temp);
-            for (let i = 0; i < temp.length - 1; i++) {
-              for (let j = 0; j < temp.length - 1 - i; j++) {
-                if (temp[j] > temp[j + 1]) {
-                  let holder = temp[j];
-                  temp[j] = temp[j + 1];
-                  temp[j + 1] = holder;
-                }
-              }
-            }
+          if (listOfUsers.length > 0 || data.length > 0) {
+            // for (let i = 0; i < listOfUsers.length; i++) {
+            //   for (let j = 0; j < listOfUsers.length; j++) {
+            //     if (data[j].phoneNumbers[0]?.number && data[j].phoneNumbers[0]?.number == listOfUsers[i].phone) {
+            //       temp.push(j);
+            //     }
+            //   }
+            // }
+            // for (let i = 0; i < temp.length - 1; i++) {
+            //   for (let j = 0; j < temp.length - 1 - i; j++) {
+            //     if (temp[j] > temp[j + 1]) {
+            //       let holder = temp[j];
+            //       temp[j] = temp[j + 1];
+            //       temp[j + 1] = holder;
+            //     }
+            //   }
+            // }
 
-            for (let i = temp.length - 1; i >= 0; i--) {
-              data.splice(temp[i], 1);
-            }
+            // for (let i = temp.length - 1; i >= 0; i--) {
+            //   data.splice(temp[i], 1);
+            // }
             temp = [...listOfUsers, ...data];
 
             setContact(temp);
@@ -89,7 +93,6 @@ export default function AddFreinds() {
     if (!temp.includes(id) && id != user._id) {
       // indexTemp.push(index);
       temp.push(id);
-      console.log(temp);
       setUsersSelected(temp);
       // setUsersSelectedIndex(indexTemp);
     }
@@ -155,17 +158,25 @@ export default function AddFreinds() {
     });
   };
   const submitUsers = async () => {
-    let temp = usersSelected;
-    temp.push(user._id);
+    if (event.resName != "") {
+      let result = await addFriendsToExisting(temp, event._id);
+      return;
+    } else {
+      let temp = usersSelected;
+      temp.push(user._id);
+      let result = await addFriends(temp);
 
-    let result = await addFriends(temp);
-
-    if (result) navigation.navigate(ROUTES.PICK_RES);
-    else console.log("users wasnt sent");
+      if (result) {
+        navigation.navigate(ROUTES.PICK_RES);
+        return;
+      }
+    }
   };
   return (
     <View style={styles.container}>
-      <Button title="create" onPress={submitUsers} />
+      <TouchableOpacity onPress={submitUsers} activeOpacity={0.7} style={styles.createButton}>
+        {!finished ? <Loading></Loading> : <Text style={styles.createButtonText}>CREATE</Text>}
+      </TouchableOpacity>
       <View style={styles.searchContainer}>
         <Input value={searchText} onChangeText={setSearchText} placeholder="Search by name or number" inputContainerStyle={styles.searchInput} />
       </View>
@@ -218,6 +229,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  createButton: {
+    backgroundColor: COLORS.primary,
+    marginLeft: "40%",
+    width: "20%",
+    borderRadius: "50%",
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   dits: {
     display: "flex",
     flexDirection: "row",
@@ -250,5 +270,10 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     marginBottom: "-5%",
+  },
+  createButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
   },
 });

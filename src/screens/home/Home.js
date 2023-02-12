@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { UserContext } from "../../../context/usersContext";
 import { useFonts } from "expo-font";
-
+import SelectButtonForTransport from "./small/selectTransportMethod";
 const Home = () => {
   let [font] = useFonts({
     oleo: require("../../../assets/fonts/OleoScript-Regular.ttf"),
@@ -51,35 +51,26 @@ const Home = () => {
             <View style={styles.sideBarDiv}>
               <View style={styles.sideBarContext}>
                 <View style={styles.userHeader}>
-                  <Text
-                    style={{
-                      color: "white",
-                      marginRight: "30%",
-                      marginTop: "30%",
-                      width: 100,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Better2Gether
-                  </Text>
-                  <View style={styles.circle4}>
+                  <View style={styles.circle3}>
                     <Image source={{ uri: user.imageUrl }} style={styles.profilePic3} />
                   </View>
                 </View>
                 <View style={styles.userNameDiv}>
-                  <Text style={styles.sideBaruserName}>{user.name}</Text>
+                  <Text style={styles.userName}>{user.name}</Text>
                 </View>
                 <View style={styles.sideBarButtons}>
                   <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
                     <Text style={styles.sideBarText}>Join event</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.ADD_FREINDS)}>
-                    <Text style={styles.sideBarText}>instant event</Text>
+                  <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
+                    <Text style={styles.sideBarText}>Home Page</Text>
                   </TouchableOpacity>
-
                   <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable}>
                     <Text style={styles.sideBarText}>future event</Text>
                   </TouchableOpacity>
+                  <View style={{}}>
+                    <SelectButtonForTransport />
+                  </View>
                   <TouchableOpacity onPress={signOut} activeOpacity={0.7} style={styles.sideBarTouchable && { marginTop: "70%" }}>
                     <Text style={styles.sideBarText}>sign out</Text>
                   </TouchableOpacity>
@@ -255,3 +246,50 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
 });
+{
+  /* <Modal visible={visible} animationType="fade" transparent={true} style={styles.modalStyle}>
+  <View style={styles.sideBarDiv}>
+    <View style={styles.sideBarContext}>
+      <View style={styles.userHeader}>
+        <Text
+          style={{
+            color: "white",
+            marginRight: "30%",
+            marginTop: "30%",
+            width: 100,
+            fontWeight: "600",
+          }}
+        >
+          Better2Gether
+        </Text>
+        <View style={styles.circle4}>
+          <Image source={{ uri: user.imageUrl }} style={styles.profilePic3} />
+        </View>
+      </View>
+      <View style={styles.userNameDiv}>
+        <Text style={styles.sideBaruserName}>{user.name}</Text>
+      </View>
+      <View style={styles.sideBarButtons}>
+        <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
+          <Text style={styles.sideBarText}>Join event</Text>
+        </TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.ADD_FREINDS)}>
+          <Text style={styles.sideBarText}>instant event</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable}>
+          <Text style={styles.sideBarText}>future event</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={signOut} activeOpacity={0.7} style={styles.sideBarTouchable && { marginTop: "70%" }}>
+          <Text style={styles.sideBarText}>sign out</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+    <TouchableOpacity activeOpacity={0.7} style={styles.navBtnModal} onPress={() => setVisible(false)}>
+      <View style={styles.line2} />
+      <View style={styles.line2} />
+      <View style={styles.line2} />
+    </TouchableOpacity>
+  </View>
+</Modal>; */
+}
