@@ -26,10 +26,8 @@ import { COLORS, ROUTES } from "../../constants";
 import { ThemeProvider, useNavigation } from "@react-navigation/native";
 import { EventContext } from "../../../context/eventContexts";
 import { UserContext } from "../../../context/usersContext";
-
 import io from "socket.io-client";
 import { GOOGLE_API_key } from "@env";
-console.log("liveview: " + GOOGLE_API_key);
 import { reverseGeocodeAsync } from "expo-location";
 import { useContext } from "react";
 import SelectButtonForTransport from "./small/selectTransportMethod";

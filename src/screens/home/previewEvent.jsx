@@ -14,7 +14,7 @@ import { EventContext } from "../../../context/eventContexts";
 import { UserContext } from "../../../context/usersContext";
 import { GOOGLE_API_key } from "@env";
 import { useContext } from "react";
-console.log("preview: " + GOOGLE_API_key);
+
 export default function PreviewEvent() {
   //! states
   const { event, acceptEvent } = useContext(EventContext);

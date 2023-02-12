@@ -9,7 +9,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { X_RapidAPI_Key } from "@env";
 import { GOOGLE_API_key } from "@env";
-console.log("pick res: " + GOOGLE_API_key);
+
 import { COLORS, ROUTES } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import { EventContext } from "../../../context/eventContexts";

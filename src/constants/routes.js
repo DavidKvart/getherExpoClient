@@ -14,17 +14,4 @@ export default {
   PICK_RES: "Pick Res",
   PREVIEW_EVENT: "Preview event",
   LIVE_VIEW: "Live View",
-
-  WALLET: "Wallet",
-  WALLET_DRAWER: "Wallet Drawer",
-
-  NOTIFICATIONS: "Notifications",
-  NOTIFICATIONS_DRAWER: "Notifications Drawer",
-
-  SETTINGS: "Settings",
-  ACCOUNT_SETTINGS: "Account Settings",
-  SETTINGS_NAVIGATOR: "Settings Navigator",
-
-  SETTINGS_DETAIL: "Settings Detail",
-  PROFILE: "My Profile",
 };
