@@ -9,39 +9,59 @@
 //  parseFloat(usersLocaition[friend._id].latitude) parseFloat(usersLocaition[friend._id].longitude)
 //!
 //!------------------
-import React, { useState, useRef, useEffect, createRef } from "react";
-import data from "../../../data";
-import MapViewDirections from "react-native-maps-directions";
-import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, View, ScrollView, Text, Image, Dimensions, TouchableOpacity, Linking, TouchableWithoutFeedback, TextInput, Alert, Modal } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { clockRunning, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Fontiso from "react-native-vector-icons/Fontisto";
-import { Keyframe } from "react-native-reanimated";
-import * as Location from "expo-location";
-import { COLORS, ROUTES } from "../../constants";
-import { ThemeProvider, useNavigation } from "@react-navigation/native";
-import { EventContext } from "../../../context/eventContexts";
-import { UserContext } from "../../../context/usersContext";
-import io from "socket.io-client";
-import { GOOGLE_API_key } from "@env";
-import { reverseGeocodeAsync } from "expo-location";
-import { useContext } from "react";
-import SelectButtonForTransport from "./small/selectTransportMethod";
+import React, { useState, useRef, useEffect, createRef } from 'react';
+import data from '../../../data';
+import MapViewDirections from 'react-native-maps-directions';
+import MapView, { Marker } from 'react-native-maps';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+  Linking,
+  TouchableWithoutFeedback,
+  TextInput,
+  Alert,
+  Modal,
+} from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  clockRunning,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Fontiso from 'react-native-vector-icons/Fontisto';
+import { Keyframe } from 'react-native-reanimated';
+import * as Location from 'expo-location';
+import { COLORS, ROUTES } from '../../constants';
+import { ThemeProvider, useNavigation } from '@react-navigation/native';
+import { EventContext } from '../../../context/eventContexts';
+import { UserContext } from '../../../context/usersContext';
+import io from 'socket.io-client';
+import { GOOGLE_API_key } from '@env';
+import { reverseGeocodeAsync } from 'expo-location';
+import { useContext } from 'react';
+import SelectButtonForTransport from './small/selectTransportMethod';
 const socket = io.connect(`https://gethersocketserverreal.onrender.com`);
 
 export default function LiveView() {
   const navigation = useNavigation();
-  const { sleep, event, createEvent, refreshEvent, removeUser, deleteEvent } = useContext(EventContext);
+  const { sleep, event, createEvent, refreshEvent, removeUser, deleteEvent } =
+    useContext(EventContext);
   const [usersAdress, setUsersAdress] = useState([]);
-  const [usersLocaition, setUsersLocaition] = useState("");
+  const [usersLocaition, setUsersLocaition] = useState('');
   const [usersTiming, setUsersTiming] = useState({});
 
-  const { user, updateUserLocaition, deviceLocaition, signOut } = useContext(UserContext);
-  const colors = ["#390099", "#9E0059", "#FFBD00", "#FF5400", "#31572C"];
+  const { user, updateUserLocaition, deviceLocaition, signOut } =
+    useContext(UserContext);
+  const colors = ['#390099', '#9E0059', '#FFBD00', '#FF5400', '#31572C'];
   const [expanded, setExpanded] = useState(false);
   const [frindVisable, setfrindVisable] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -75,7 +95,9 @@ export default function LiveView() {
     lat1 = toRadians(lat1);
     lat2 = toRadians(lat2);
 
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -94,13 +116,13 @@ export default function LiveView() {
     })
     .onUpdate((event) => {
       translateY.value = event.translationY + context.value.y;
-      translateY.value = Math.max(translateY.value, -SCREEN_HEIGHT / 6); // was 10
+      translateY.value = Math.max(translateY.value, -SCREEN_HEIGHT / 10); // was 10
     })
     .onEnd(() => {
       if (translateY.value > 0) {
         translateY.value = withSpring(SCREEN_HEIGHT / 4.5, { damping: 30 });
       } else {
-        translateY.value = withSpring(-SCREEN_HEIGHT / 2, { damping: 30 }); // was  18
+        translateY.value = withSpring(-SCREEN_HEIGHT / 18, { damping: 30 }); // was  18
       }
     });
   const rBottomSheetStyle = useAnimatedStyle(() => {
@@ -119,7 +141,9 @@ export default function LiveView() {
         latitude: event.users[i].courentLat,
         longitude: event.users[i].courentLng,
       });
-      temp.push(`${result[0].streetNumber} ${result[0].street}, ${result[0].city},${result[0].isoCountryCode}`);
+      temp.push(
+        `${result[0].streetNumber} ${result[0].street}, ${result[0].city},${result[0].isoCountryCode}`
+      );
     }
 
     return temp;
@@ -145,8 +169,12 @@ export default function LiveView() {
               <Text style={styles.headerTimeText}>TIME</Text>
             </View>
             <View style={styles.infoDiv}>
-              <Text style={styles.infoDisText}>{parseFloat(usersTiming[friend._id].distance).toFixed(2)}</Text>
-              <Text style={styles.infoTimeText}>{parseFloat(usersTiming[friend._id].duration).toFixed(2)}</Text>
+              <Text style={styles.infoDisText}>
+                {parseFloat(usersTiming[friend._id].distance).toFixed(2)}
+              </Text>
+              <Text style={styles.infoTimeText}>
+                {parseFloat(usersTiming[friend._id].duration).toFixed(2)}
+              </Text>
             </View>
           </View>
           {friend._id == user._id ? (
@@ -156,15 +184,18 @@ export default function LiveView() {
               onPress={() => {
                 pressModal();
                 setfrindVisable(!frindVisable);
-                Alert.alert("You are going to leave my friend", `This action will remove ${user.name} from the event`, [
-                  {
-                    text: "Remove",
-                    onPress: () => removeUser(user._id, event.roomID),
-                  },
-                  { text: "Cancel" },
-                ]);
-              }}
-            >
+                Alert.alert(
+                  'You are going to leave my friend',
+                  `This action will remove ${user.name} from the event`,
+                  [
+                    {
+                      text: 'Remove',
+                      onPress: () => removeUser(user._id, event.roomID),
+                    },
+                    { text: 'Cancel' },
+                  ]
+                );
+              }}>
               <Text style={styles.uninviteButText}>leave</Text>
             </TouchableOpacity>
           ) : (
@@ -174,15 +205,18 @@ export default function LiveView() {
               onPress={() => {
                 pressModal();
                 setfrindVisable(!frindVisable);
-                Alert.alert("You are going to make some one sad!!", `This action will remove ${friend.name} from the event`, [
-                  {
-                    text: "Remove",
-                    onPress: () => removeUser(friend._id, event.roomID),
-                  },
-                  { text: "Cancel" },
-                ]);
-              }}
-            >
+                Alert.alert(
+                  'You are going to make some one sad!!',
+                  `This action will remove ${friend.name} from the event`,
+                  [
+                    {
+                      text: 'Remove',
+                      onPress: () => removeUser(friend._id, event.roomID),
+                    },
+                    { text: 'Cancel' },
+                  ]
+                );
+              }}>
               <Text style={styles.uninviteButText}>Uninvite</Text>
             </TouchableOpacity>
           )}
@@ -192,7 +226,7 @@ export default function LiveView() {
   };
   // ! USE EFFECTS
   useEffect(() => {
-    translateY.value = withSpring(SCREEN_HEIGHT / 10);
+    translateY.value = withSpring(SCREEN_HEIGHT / 4.5);
 
     if (event.users.length > 0) {
       async function a() {
@@ -203,16 +237,16 @@ export default function LiveView() {
     }
   }, []);
   useEffect(() => {
-    socket.emit("join_room", event.roomID);
-    socket.on("refresh_event", async () => {
+    socket.emit('join_room', event.roomID);
+    socket.on('refresh_event', async () => {
       await refreshEvent(event.roomID);
     });
-    socket.on("event_was_deleted", () => {
+    socket.on('event_was_deleted', () => {
       navigation.navigate(ROUTES.HOME_TAB);
       Alert.alert(`this event was deleted by ${data.name} `);
     });
     return () => {
-      socket.emit("leave_room", {
+      socket.emit('leave_room', {
         room: event.roomID,
       });
     };
@@ -235,15 +269,15 @@ export default function LiveView() {
   const chaneglocaition = async (locaition) => {
     await updateUserLocaition(user._id);
     await refreshEvent(event.roomID);
-    socket.emit("mongo_was_updated", { roomID: event.roomID });
+    socket.emit('mongo_was_updated', { roomID: event.roomID });
   };
   const deleteTheCourentEvent = async () => {
-    socket.emit("user_deleted_event", {
+    socket.emit('user_deleted_event', {
       roomID: event.roomID,
       userName: user.name,
     });
     let result = await deleteEvent(event._id);
-    if (!result) Alert.alert("failed to delete the event");
+    if (!result) Alert.alert('failed to delete the event');
     else {
       navigation.navigate(ROUTES.HOME_TAB);
     }
@@ -259,8 +293,7 @@ export default function LiveView() {
           longitude: parseFloat(event.resLng),
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
-        }}
-      >
+        }}>
         {event
           ? event.users.map((friend, i) => {
               return (
@@ -269,9 +302,11 @@ export default function LiveView() {
                     coordinate={{
                       latitude: parseFloat(friend.courentLat),
                       longitude: parseFloat(friend.courentLng),
-                    }}
-                  >
-                    <Image source={{ uri: friend.imageUrl }} style={styles.profilePic} />
+                    }}>
+                    <Image
+                      source={{ uri: friend.imageUrl }}
+                      style={styles.profilePic}
+                    />
                   </Marker>
                   <MapViewDirections
                     origin={{
@@ -304,98 +339,134 @@ export default function LiveView() {
                 </>
               );
             })
-          : ""}
+          : ''}
 
         <Marker
           coordinate={{
             latitude: parseFloat(event.resLat),
             longitude: parseFloat(event.resLng),
-          }}
-        >
-          <Image source={{ uri: event.resImageUrl }} style={styles.profilePic} />
+          }}>
+          <Image
+            source={{ uri: event.resImageUrl }}
+            style={styles.profilePic}
+          />
         </Marker>
       </MapView>
 
       <View style={styles.bigContainer}>
-        <View style={{ display: "flex", flexDirection: "row", top: "4%" }}>
-          <TouchableOpacity activeOpacity={0.7} style={styles.frindBtn} onPress={() => setfrindVisable(!frindVisable)}>
-            <Image source={require("../../assets/frinds.png")} style={{ height: "80%", width: "80%" }} />
+        <View style={{ display: 'flex', flexDirection: 'row', top: '4%' }}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.frindBtn}
+            onPress={() => setfrindVisable(!frindVisable)}>
+            <Image
+              source={require('../../assets/frinds.png')}
+              style={{ height: '80%', width: '80%' }}
+            />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.7} style={styles.navBtn} onPress={() => setVisible(true)}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.navBtn}
+            onPress={() => setVisible(true)}>
             <View style={styles.line2} />
             <View style={styles.line2} />
             <View style={styles.line2} />
           </TouchableOpacity>
         </View>
         {frindVisable ? (
-          <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} snapToInterval={400} decelerationRate="fast" contentContainerStyle={styles.scrollContainer}>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            snapToInterval={400}
+            decelerationRate="fast"
+            contentContainerStyle={styles.scrollContainer}>
             <View style={styles.cardContainer}>
               {event
                 ? event.users.map((friend, index) => {
-                    let statusIcon = "";
-                    let statusStyle = "";
-                    let circleStyle = "";
+                    let statusIcon = '';
+                    let statusStyle = '';
+                    let circleStyle = '';
 
-                    if (event.usersStatus[index] === "approved") {
-                      statusIcon = "like";
-                      statusStyle = "status1";
-                      circleStyle = "circle1";
-                    } else if (event.usersStatus[index] === "disapproved") {
-                      statusIcon = "dislike";
-                      statusStyle = "status2";
-                      circleStyle = "circle2";
+                    if (event.usersStatus[index] === 'approved') {
+                      statusIcon = 'like';
+                      statusStyle = 'status1';
+                      circleStyle = 'circle1';
+                    } else if (event.usersStatus[index] === 'disapproved') {
+                      statusIcon = 'dislike';
+                      statusStyle = 'status2';
+                      circleStyle = 'circle2';
                     } else {
-                      statusIcon = "hourglass-start";
-                      statusStyle = "status3";
-                      circleStyle = "circle3";
+                      statusIcon = 'hourglass-start';
+                      statusStyle = 'status3';
+                      circleStyle = 'circle3';
                     }
-                    let icon = "walking";
+                    let icon = 'walking';
                     switch (friend.transportMode) {
-                      case "DRIVING":
-                        icon = "car-side";
+                      case 'DRIVING':
+                        icon = 'car-side';
                         break;
-                      case "BICYCLING":
-                        icon = "bicycle";
+                      case 'BICYCLING':
+                        icon = 'bicycle';
                         break;
-                      case "TRANSIT":
-                        icon = "train";
+                      case 'TRANSIT':
+                        icon = 'train';
                         break;
                     }
                     return (
                       <>
                         <TouchableWithoutFeedback onPress={() => pressModal()}>
-                          <View style={[styles.card, expanded && styles.cardExpanded]}>
-                            <FontAwesome5
+                          <View
+                            style={[
+                              styles.card,
+                              expanded && styles.cardExpanded,
+                            ]}>
+                            {/* <FontAwesome5
                               name={icon}
                               style={{
-                                color: "grey",
+                                color: 'grey',
                                 fontSize: 25,
-                                fontWeight: "100",
+                                fontWeight: '100',
                               }}
-                            />
+                            /> */}
                             <View style={styles[circleStyle]}>
-                              <Image source={{ uri: friend.imageUrl }} style={styles.profilePic2} />
+                              <Image
+                                source={{ uri: friend.imageUrl }}
+                                style={styles.profilePic2}
+                              />
                             </View>
                             <Text style={styles.userName}>{friend.name}</Text>
 
-                            {info ? <Text style={styles.clickFor}>click for more</Text> : <Text style={styles.clickFor}>click for less</Text>}
-
-                            <Fontiso name={statusIcon} style={styles[statusStyle]} />
-                            {expanded ? getuserscards(friend, index) : ""}
+                            {info ? (
+                              <Text style={styles.clickFor}>
+                                click for more
+                              </Text>
+                            ) : (
+                              <Text style={styles.clickFor}>
+                                click for less
+                              </Text>
+                            )}
+                            <FontAwesome5 name={icon} style={styles.status4} />
+                            <Fontiso
+                              name={statusIcon}
+                              style={styles[statusStyle]}
+                            />
+                            {expanded ? getuserscards(friend, index) : ''}
                           </View>
                         </TouchableWithoutFeedback>
                       </>
                     );
                   })
-                : ""}
+                : ''}
             </View>
           </ScrollView>
         ) : (
-          ""
+          ''
         )}
       </View>
       <GestureDetector gesture={gesture}>
-        <Animated.View showsVerticalScrollIndicator={false} style={[styles.info, rBottomSheetStyle]}>
+        <Animated.View
+          showsVerticalScrollIndicator={false}
+          style={[styles.info, rBottomSheetStyle]}>
           <View style={styles.line} />
           <View style={styles.resInfo}>
             <Image style={styles.pic} source={{ uri: event.resImageUrl }} />
@@ -404,77 +475,106 @@ export default function LiveView() {
                 <Text style={styles.userName}>{event.resName}</Text>
               </TouchableOpacity>
 
-              <Text style={{ marginLeft: "20.5%", marginTop: "21%", fontSize: 16 }}>
+              <Text
+                style={{ marginLeft: '20.5%', marginTop: '21%', fontSize: 16 }}>
                 {event.cuisine[0]}, {event.cuisine[1]}
               </Text>
               <Text
                 style={{
                   fontSize: 20,
-                  fontWeight: "200",
-                  marginLeft: "21%",
-                  marginTop: "5%",
-                }}
-              >
+                  fontWeight: '200',
+                  marginLeft: '21%',
+                  marginTop: '5%',
+                }}>
                 {event.rating}
                 <FontAwesome
                   name="star"
                   style={{
-                    color: "black",
+                    color: 'black',
                     fontSize: 23,
-                    fontWeight: "100",
+                    fontWeight: '100',
                   }}
                 />
               </Text>
-              <TouchableOpacity activeOpacity={0.7} style={styles.invite} onPress={() => navigation.navigate(ROUTES.ADD_FREINDS_TO_EXISTING)}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.invite}
+                onPress={() =>
+                  navigation.navigate(ROUTES.ADD_FREINDS_TO_EXISTING)
+                }>
                 <Text style={styles.uninviteButText}>Invite more</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={styles.deleteEv}
                 onPress={() =>
-                  Alert.alert("Delete event", `This action will delete the event`, [
-                    {
-                      text: "Delete",
-                      onPress: () => deleteTheCourentEvent(),
-                    },
-                    { text: "Cancel" },
-                  ])
-                }
-              >
+                  Alert.alert(
+                    'Delete event',
+                    `This action will delete the event`,
+                    [
+                      {
+                        text: 'Delete',
+                        onPress: () => deleteTheCourentEvent(),
+                      },
+                      { text: 'Cancel' },
+                    ]
+                  )
+                }>
                 <Text style={styles.uninviteButText}>Delete event</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Animated.View>
       </GestureDetector>
-      <Modal visible={visible} animationType="fade" transparent={true} style={styles.modalStyle}>
+      <Modal
+        visible={visible}
+        animationType="fade"
+        transparent={true}
+        style={styles.modalStyle}>
         <View style={styles.sideBarDiv}>
           <View style={styles.sideBarContext}>
             <View style={styles.userHeader}>
               <View style={styles.circle3}>
-                <Image source={{ uri: user.imageUrl }} style={styles.profilePic3} />
+                <Image
+                  source={{ uri: user.imageUrl }}
+                  style={styles.profilePic3}
+                />
               </View>
             </View>
             <View style={styles.userNameDiv}>
               <Text style={styles.userName}>{user.name}</Text>
             </View>
             <View style={styles.sideBarButtons}>
-              <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.sideBarTouchable}
+                onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
                 <Text style={styles.sideBarText}>Join event</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.sideBarTouchable}
+                onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
                 <Text style={styles.sideBarText}>Home Page</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.sideBarTouchable}>
                 <Text style={styles.sideBarText}>future event</Text>
               </TouchableOpacity>
               <SelectButtonForTransport eventExist={true} />
-              <TouchableOpacity onPress={signOut} activeOpacity={0.7} style={styles.sideBarTouchable && { marginTop: "70%" }}>
+              <TouchableOpacity
+                onPress={signOut}
+                activeOpacity={0.7}
+                style={styles.sideBarTouchable && { marginTop: '70%' }}>
                 <Text style={styles.sideBarText}>sign out</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity activeOpacity={0.7} style={styles.navBtnModal} onPress={() => setVisible(false)}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.navBtnModal}
+            onPress={() => setVisible(false)}>
             <View style={styles.line2} />
             <View style={styles.line2} />
             <View style={styles.line2} />
@@ -484,462 +584,454 @@ export default function LiveView() {
     </View>
   );
 }
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   modalStyle: {
-    backfaceVisibility: "visible",
-    backgroundColor: "transparent",
-    width: "50%",
+    backfaceVisibility: 'visible',
+    backgroundColor: 'transparent',
+    width: '50%',
   },
   profilePic3: {
     height: 75,
     width: 75,
-    // borderRadius: 50,
-    position: "absolute",
-    alignSelf: "center",
+    borderRadius: 50,
+    position: 'absolute',
+    alignSelf: 'center',
     marginTop: 2.5,
   },
   sideBarDiv: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "row",
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'row',
   },
   sideBarContext: {
-    backgroundColor: "white",
-    width: "40%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    backgroundColor: 'white',
+    width: '40%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   userHeader: {
     backgroundColor: COLORS.primary,
-    height: "18.2%",
-    width: "100%",
-    alignItems: "center",
+    height: '18.2%',
+    width: '100%',
+    alignItems: 'center',
   },
   circle4: {
     height: 85,
     width: 85,
-    backgroundColor: "white",
-    // borderRadius: 50,
+    backgroundColor: 'white',
+    borderRadius: 50,
     // marginLeft: 45,
     marginTop: 130,
   },
   sideBarTouchable: {
-    height: "13%",
-    width: "100%",
+    height: '13%',
+    width: '100%',
   },
   userNameDiv: {
-    marginTop: "20%",
-    marginLeft: "-93%",
+    marginTop: '20%',
+    marginLeft: '-93%',
   },
   sideBaruserName: {
     fontSize: 15,
-    fontWeight: "600",
-    marginTop: "5%",
-    marginLeft: "20%",
-    color: "black",
-    position: "absolute",
-    shadowColor: "white",
+    fontWeight: '600',
+    marginTop: '5%',
+    marginLeft: '20%',
+    color: 'black',
+    position: 'absolute',
+    shadowColor: 'white',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
   sideBarButtons: {
-    marginTop: "50%",
-    marginRight: "8%",
-    width: "80%",
+    marginTop: '50%',
+    marginRight: '8%',
+    width: '80%',
   },
   sideBarText: {
-    color: "black",
+    color: 'black',
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   map: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   info: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     height: SCREEN_HEIGHT / 2.2,
-    alignSelf: "center",
-    width: "100%",
-    position: "absolute",
-    marginTop: "156%",
-    // borderRadius: '30%',
+    alignSelf: 'center',
+    width: '100%',
+    position: 'absolute',
+    marginTop: '156%',
+    borderRadius: '30%',
   },
   line: {
     width: 75,
     height: 4,
-    backgroundColor: "grey",
-    alignSelf: "center",
+    backgroundColor: 'grey',
+    alignSelf: 'center',
     marginVertical: 15,
-    // borderRadius: 2,
+    borderRadius: 2,
   },
   line2: {
     width: 35,
     height: 4,
-    backgroundColor: "grey",
-    alignSelf: "center",
+    backgroundColor: 'grey',
+    alignSelf: 'center',
     marginVertical: 2,
-    // borderRadius: 2,
+    borderRadius: 2,
   },
   pic: {
-    height: "67%",
-    width: "45%",
-    // borderRadius: '8%',
-    marginLeft: "5%",
+    height: '67%',
+    width: '45%',
+    borderRadius: '8%',
+    marginLeft: '5%',
   },
   restName: {
     fontSize: 20,
-    fontWeight: "600",
-    marginTop: "2%",
-    marginLeft: "2%",
+    fontWeight: '600',
+    marginTop: '2%',
+    marginLeft: '2%',
   },
   userName: {
     fontSize: 25,
-    fontWeight: "600",
-    marginTop: "5%",
-    marginLeft: "20%",
-    color: "black",
-    position: "absolute",
-    shadowColor: "white",
+    fontWeight: '600',
+    marginTop: '5%',
+    marginLeft: '20%',
+    color: 'black',
+    position: 'absolute',
+    shadowColor: 'white',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
   restDist: {
     fontSize: 18,
-    fontWeight: "200",
-    marginLeft: "2%",
-    color: "grey",
+    fontWeight: '200',
+    marginLeft: '2%',
+    color: 'grey',
   },
   circle1: {
     height: 55,
     width: 55,
-    backgroundColor: "#70e000",
-    // borderRadius: 50,
+    backgroundColor: '#70e000',
+    borderRadius: 50,
     marginLeft: 10,
     marginTop: 7,
   },
   circle2: {
     height: 55,
     width: 55,
-    backgroundColor: "#f07167",
-    // borderRadius: 50,
+    backgroundColor: '#f07167',
+    borderRadius: 50,
     marginLeft: 10,
     marginTop: 7,
   },
   circle3: {
     height: 55,
     width: 55,
-    backgroundColor: "#edae49",
-    // borderRadius: 50,
+    backgroundColor: '#edae49',
+    borderRadius: 50,
     marginLeft: 10,
     marginTop: 7,
   },
   profilePic: {
     height: 48,
     width: 48,
-    // borderRadius: 50,
-    position: "absolute",
+    borderRadius: '50%',
+    position: 'absolute',
     marginLeft: 3,
     marginTop: 3,
   },
   profilePic2: {
     height: 50,
     width: 50,
-    // borderRadius: 50,
-    position: "absolute",
-    alignSelf: "center",
+    borderRadius: '50%',
+    position: 'absolute',
+    alignSelf: 'center',
     marginTop: 3,
   },
   typeButton: {
-    display: "flex",
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "20%",
-    marginBottom: "-5%",
-    marginLeft: "5%",
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '20%',
+    marginBottom: '-5%',
+    marginLeft: '5%',
   },
   scrollContainer: {
-    alignItems: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    marginTop: "2%",
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginTop: '2%',
   },
   cardContainer: {
-    flexDirection: "row",
-    width: "100%",
-    height: "100%",
+    flexDirection: 'row',
+    width: '100%',
+    height: '100%',
     marginLeft: 39,
   },
   card: {
     width: 390,
     height: 70,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     marginRight: 10,
-    // borderRadius: '8%',
+    borderRadius: '8%',
   },
   ResCard: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: '#f8f9fa',
     marginTop: 30,
-    alignSelf: "center",
+    alignSelf: 'center',
     height: 270,
-    width: "94%",
-    shadowColor: "#171717",
+    width: '94%',
+    shadowColor: '#171717',
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
   },
   cardExpanded: {
     height: 220,
-    // borderBottomLeftRadius: '8%',
-    // borderBottomRightRadius: '8%',
+    borderBottomLeftRadius: '8%',
+    borderBottomRightRadius: '8%',
   },
   status1: {
     fontSize: 26,
-    fontWeight: "600",
-    marginTop: "6%",
-    marginLeft: "88%",
-    color: "#70e000",
-    position: "absolute",
+    fontWeight: '600',
+    marginTop: '6%',
+    marginLeft: '88%',
+    color: '#70e000',
+    position: 'absolute',
   },
   status2: {
     fontSize: 26,
-    fontWeight: "600",
-    marginTop: "6%",
-    marginLeft: "88%",
-    color: "#f07167",
-    position: "absolute",
+    fontWeight: '600',
+    marginTop: '6%',
+    marginLeft: '88%',
+    color: '#f07167',
+    position: 'absolute',
   },
   status3: {
     fontSize: 26,
-    fontWeight: "600",
-    marginTop: "6%",
-    marginLeft: "88%",
-    color: "#edae49",
-    position: "absolute",
+    fontWeight: '600',
+    marginTop: '6%',
+    marginLeft: '88%',
+    color: '#edae49',
+    position: 'absolute',
+  },
+  status4: {
+    fontSize: 26,
+    marginTop: '6%',
+    marginLeft: '75%',
+    color: COLORS.gray,
+    position: 'absolute',
   },
   myLocation: {
     fontSize: 28,
-    fontWeight: "600",
-    marginTop: "3%",
-    marginLeft: "5%",
-    color: "#edae49",
-    position: "absolute",
+    fontWeight: '600',
+    marginTop: '3%',
+    marginLeft: '5%',
+    color: '#edae49',
+    position: 'absolute',
   },
   myDestination: {
     fontSize: 28,
-    fontWeight: "600",
-    marginLeft: "5%",
-    marginTop: "15%",
-    color: "#f07167",
-    position: "absolute",
+    fontWeight: '600',
+    marginLeft: '5%',
+    marginTop: '15%',
+    color: '#f07167',
+    position: 'absolute',
   },
   frindBtn: {
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "15%",
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '15%',
     height: 40,
-    marginLeft: "4.7%",
-    top: "-5%",
-    backgroundColor: "white",
-    // borderRadius: '8%',
+    marginLeft: '4.7%',
+    top: '-5%',
+    backgroundColor: 'white',
+    borderRadius: '8%',
   },
   navBtn: {
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "15%",
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '15%',
     height: 40,
-    marginLeft: "61%",
-    top: "-5%",
-    backgroundColor: "white",
-    // borderRadius: '8%',
+    marginLeft: '61%',
+    top: '-5%',
+    backgroundColor: 'white',
+    borderRadius: '8%',
   },
   navBtnModal: {
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "15%",
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '15%',
     height: 40,
-    marginLeft: "40.65%",
-    top: "10.7%",
-    backgroundColor: "white",
-    // borderRadius: '8%',
+    marginLeft: '40.65%',
+    top: '10.7%',
+    backgroundColor: 'white',
+    borderRadius: '8%',
   },
   bigContainer: {
     height: 275,
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     marginTop: 50,
   },
   expandedDiv: {
     width: 390,
     height: 100,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: '#f8f9fa',
     marginRight: 10,
     marginTop: 10,
-    // borderBottomRightRadius: '8%',
-    // borderBottomLeftRadius: '8%',
+    borderBottomRightRadius: '8%',
+    borderBottomLeftRadius: '8%',
   },
   verticalLine: {
     height: 25,
-    width: "1%",
-    marginTop: "9.5%",
-    marginLeft: "8.4%",
-    // borderLeftWidth: '1.5%',
-    // borderLeftColor: 'grey',
+    width: '1%',
+    marginTop: '9.5%',
+    marginLeft: '8.4%',
+    borderLeftWidth: '1.5%',
+    borderLeftColor: 'grey',
   },
   curLoc: {
-    // borderBottomWidth: '1%',
-    // borderBottomColor: '#dad7cd',
-    width: "85%",
-    marginLeft: "15%",
-    marginTop: "-11.5%",
+    borderBottomWidth: '1%',
+    borderBottomColor: '#dad7cd',
+    width: '85%',
+    marginLeft: '15%',
+    marginTop: '-11.5%',
   },
   curLocText: {
-    marginBottom: "4%",
+    marginBottom: '4%',
     fontSize: 15,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   resLoc: {
-    // borderBottomWidth: '1%',
-    // borderBottomColor: '#dad7cd',
-    width: "100%",
-    marginTop: "3%",
+    borderBottomWidth: '1%',
+    borderBottomColor: '#dad7cd',
+    width: '100%',
+    marginTop: '3%',
   },
   resLocText: {
-    marginBottom: "4%",
-    marginLeft: "15%",
+    marginBottom: '4%',
+    marginLeft: '15%',
     fontSize: 15,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   midContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   smallContainer: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
   headersDiv: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "65%",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '65%',
   },
   headerDisText: {
-    color: "grey",
+    color: 'grey',
     fontSize: 12,
-    marginTop: "3%",
-    fontWeight: "500",
+    marginTop: '3%',
+    fontWeight: '500',
   },
   headerTimeText: {
-    color: "grey",
+    color: 'grey',
     fontSize: 12,
-    marginTop: "3%",
-    fontWeight: "500",
+    marginTop: '3%',
+    fontWeight: '500',
   },
   infoDiv: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "65%",
-    marginLeft: "2%",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '65%',
+    marginLeft: '2%',
   },
   infoDisText: {
-    color: "black",
+    color: 'black',
     fontSize: 15,
-    fontWeight: "600",
-    marginTop: "3%",
+    fontWeight: '600',
+    marginTop: '3%',
   },
   infoTimeText: {
-    color: "black",
+    color: 'black',
     fontSize: 15,
-    fontWeight: "600",
-    marginTop: "3%",
+    fontWeight: '600',
+    marginTop: '3%',
   },
   uninviteBut: {
-    backgroundColor: "#f07167",
-    marginTop: "2%",
-    width: "40%",
-    // borderTopLeftRadius: '50%',
-    // borderTopRightRadius: '50%',
-    // borderBottomRightRadius: '50%',
-    // borderBottomLeftRadius: '50%',
+    backgroundColor: '#f07167',
+    marginTop: '2%',
+    width: '40%',
+    borderRadius: '50%',
     height: 40,
-    marginLeft: "-25%",
-    alignItems: "center",
-    justifyContent: "center",
+    marginLeft: '-25%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   uninviteButText: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   invite: {
-    backgroundColor: "#70e000",
-    marginTop: "20%",
-    marginLeft: "20%",
-    width: "70%",
-    // borderTopLeftRadius: '50%',
-    // borderTopRightRadius: '50%',
-    // borderBottomRightRadius: '50%',
-    // borderBottomLeftRadius: '50%',
+    backgroundColor: '#70e000',
+    marginTop: '20%',
+    marginLeft: '20%',
+    width: '70%',
+    borderRadius: '50%',
     height: 40,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   deleteEv: {
-    backgroundColor: "#f07167",
-    marginTop: "5%",
-    marginLeft: "20%",
-    width: "70%",
-    // borderTopLeftRadius: '50%',
-    // borderTopRightRadius: '50%',
-    // borderBottomRightRadius: '50%',
-    // borderBottomLeftRadius: '50%',
+    backgroundColor: '#f07167',
+    marginTop: '5%',
+    marginLeft: '20%',
+    width: '70%',
+    borderRadius: '50%',
     height: 40,
-    get height() {
-      return this._height;
-    },
-    set height(value) {
-      this._height = value;
-    },
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   resInfo: {
-    display: "flex",
-    flexDirection: "row",
-    height: "90%",
-    width: "100%",
-    justifyContent: "flex-start",
+    display: 'flex',
+    flexDirection: 'row',
+    height: '90%',
+    width: '100%',
+    justifyContent: 'flex-start',
   },
   resInfoText: {
-    height: "100%",
-    width: "60%",
-    marginLeft: "-9%",
-    display: "flex",
-    flexDirection: "column",
+    height: '100%',
+    width: '60%',
+    marginLeft: '-9%',
+    display: 'flex',
+    flexDirection: 'column',
   },
   clickFor: {
-    marginLeft: "20%",
-    marginTop: "-3.5%",
-    marginBottom: "-2%",
-    color: "grey",
+    marginLeft: '20%',
+    marginTop: '-3.5%',
+    marginBottom: '-2%',
+    color: 'grey',
   },
 });
 
