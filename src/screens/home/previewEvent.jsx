@@ -1,24 +1,39 @@
-import React, { useState, useRef, useEffect, createRef } from "react";
+import React, { useState, useRef, useEffect, createRef } from 'react';
 
-import MapViewDirections from "react-native-maps-directions";
-import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, View, ScrollView, Text, Image, Dimensions, Alert, Modal, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import Fontiso from "react-native-vector-icons/Fontisto";
-import { COLORS, ROUTES } from "../../constants";
-import { useNavigation } from "@react-navigation/native";
-import { EventContext } from "../../../context/eventContexts";
-import { UserContext } from "../../../context/usersContext";
-import { GOOGLE_API_key } from "@env";
-import { useContext } from "react";
+import MapViewDirections from 'react-native-maps-directions';
+import MapView, { Marker } from 'react-native-maps';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  Image,
+  Dimensions,
+  Alert,
+  Modal,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+} from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Fontiso from 'react-native-vector-icons/Fontisto';
+import { COLORS, ROUTES } from '../../constants';
+import { useNavigation } from '@react-navigation/native';
+import { EventContext } from '../../../context/eventContexts';
+import { UserContext } from '../../../context/usersContext';
+import { GOOGLE_API_key } from '@env';
+import { useContext } from 'react';
 
 export default function PreviewEvent() {
   //! states
   const { event, acceptEvent } = useContext(EventContext);
-  const colors = ["#390099", "#9E0059", "#FFBD00", "#FF5400", "#31572C"];
+  const colors = ['#390099', '#9E0059', '#FFBD00', '#FF5400', '#31572C'];
 
   const mapRef = useRef();
   useEffect(() => {
@@ -29,28 +44,33 @@ export default function PreviewEvent() {
       };
     });
     temp.push({ latitude: event.resLat, longitude: event.resLng });
-    mapRef.current?.fitToCoordinates(temp, { bottom: 30, right: 10, left: 10, top: 30 });
+    mapRef.current?.fitToCoordinates(temp, {
+      bottom: 30,
+      right: 10,
+      left: 10,
+      top: 30,
+    });
   }, []);
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollContainer}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.declineButton}
             onPress={() => {
-              acceptEvent("disapproved");
-            }}
-          >
+              acceptEvent('disapproved');
+            }}>
             <Text style={styles.uninviteButText}>Decline</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.acceptButton}
             onPress={() => {
-              acceptEvent("approved");
-            }}
-          >
+              acceptEvent('approved');
+            }}>
             <Text style={styles.uninviteButText}>Enter event</Text>
           </TouchableOpacity>
         </View>
@@ -75,35 +95,35 @@ export default function PreviewEvent() {
                 <FontAwesome
                   name="star"
                   style={{
-                    color: "grey",
+                    color: 'grey',
                     fontSize: 23,
-                    fontWeight: "100",
+                    fontWeight: '100',
                   }}
                 />
               </Text>
 
               <Text style={styles.littleHeading}>
-                {" "}
-                {Math.floor(10 * 1000)}m{" "}
+                {' '}
+                {Math.floor(10 * 1000)}m{' '}
                 <FontAwesome5
                   name="walking"
                   style={{
-                    color: "grey",
+                    color: 'grey',
                     fontSize: 25,
-                    fontWeight: "100",
+                    fontWeight: '100',
                   }}
                 />
               </Text>
 
               <Text style={styles.littleHeading}>
-                {" "}
+                {' '}
                 learn more
                 <FontAwesome5
                   name="walking"
                   style={{
-                    color: "grey",
+                    color: 'grey',
                     fontSize: 25,
-                    fontWeight: "100",
+                    fontWeight: '100',
                   }}
                 />
               </Text>
@@ -111,58 +131,87 @@ export default function PreviewEvent() {
           </View>
         </View>
 
-        <ScrollView style={styles.friendScrollContainer} showsHorizontalScrollIndicator={false} horizontal={true} snapToInterval={400} decelerationRate="fast">
+        <ScrollView
+          style={styles.friendScrollContainer}
+          showsHorizontalScrollIndicator={false}
+          horizontal={true}
+          snapToInterval={400}
+          decelerationRate="fast">
           {event &&
             event.users.map((friend, index) => {
-              let statusIcon = "";
-              let statusStyle = "";
-              let circleStyle = "";
+              let statusIcon = '';
 
-              if (event.usersStatus[index] === "approved") {
-                statusIcon = "like";
-                statusStyle = "status1";
-                circleStyle = "circle1";
-              } else if (event.usersStatus[index] === "disapproved") {
-                statusIcon = "dislike";
-                statusStyle = "status2";
-                circleStyle = "circle2";
+              if (event.usersStatus[index] === 'approved') {
+                statusIcon = 'like';
+              } else if (event.usersStatus[index] === 'disapproved') {
+                statusIcon = 'dislike';
               } else {
-                statusIcon = "hourglass-start";
-                statusStyle = "status3";
-                circleStyle = "circle3";
+                statusIcon = 'hourglass-start';
               }
-              let icon = "walking";
+              let icon = 'walking';
               switch (friend.transportMode) {
-                case "DRIVING":
-                  icon = "car-side";
+                case 'DRIVING':
+                  icon = 'car-side';
                   break;
-                case "BICYCLING":
-                  icon = "bicycle";
+                case 'BICYCLING':
+                  icon = 'bicycle';
                   break;
-                case "TRANSIT":
-                  icon = "train";
+                case 'TRANSIT':
+                  icon = 'train';
                   break;
               }
               return (
                 <View style={styles.userCard}>
-                  <View style={styles[circleStyle]}>
-                    <Image source={{ uri: friend.imageUrl }} style={styles.profilePic3} />
-                  </View>
-                  <View style={styles.nameIconHolder}>
-                    <Text style={styles.userName}>{friend.name}</Text>
-                    <View style={styles.iconHolder}>
+                  <View style={styles.textTiming}>
+                    <View style={styles.circle1}>
+                      <Image
+                        source={{ uri: friend.imageUrl }}
+                        style={styles.profilePic2}
+                      />
+                    </View>
+                    <View style={styles.userDistance}>
+                      <Text style={styles.restName}>{friend.name}</Text>
+                      <Text style={{ color: COLORS.gray }}>Friend name</Text>
+                    </View>
+                    <View style={styles.userDistance}>
+                      <Fontiso name={statusIcon} style={styles.status1} />
+                      <Text style={{ color: COLORS.gray }}>Status</Text>
+                    </View>
+                    <View style={styles.userMethed}>
                       <FontAwesome5
                         name={icon}
                         style={{
-                          color: "grey",
+                          color: 'black',
                           fontSize: 25,
-                          fontWeight: "100",
+                          fontWeight: '100',
                         }}
                       />
-                      <Fontiso name={statusIcon} style={styles[statusStyle]} />
+                      <Text style={{ color: COLORS.gray }}>Method</Text>
                     </View>
                   </View>
                 </View>
+                // <View style={styles.userCard}>
+                //   <View style={styles[circleStyle]}>
+                //     <Image
+                //       source={{ uri: friend.imageUrl }}
+                //       style={styles.profilePic3}
+                //     />
+                //   </View>
+                //   <View style={styles.nameIconHolder}>
+                //     <Text style={styles.userName}>{friend.name}</Text>
+                //     <View style={styles.iconHolder}>
+                //       <FontAwesome5
+                //         name={icon}
+                //         style={{
+                //           color: 'grey',
+                //           fontSize: 25,
+                //           fontWeight: '100',
+                //         }}
+                //       />
+                //       <Fontiso name={statusIcon} style={styles[statusStyle]} />
+                //     </View>
+                //   </View>
+                // </View>
               );
             })}
         </ScrollView>
@@ -176,23 +225,31 @@ export default function PreviewEvent() {
               longitude: parseFloat(event.resLng),
             }}
             zoomControlEnabled={true}
-            showsScale={true}
-          >
+            showsScale={true}>
             <Marker
               coordinate={{
                 latitude: parseFloat(event.resLat),
                 longitude: parseFloat(event.resLng),
-              }}
-            >
-              <Image source={{ uri: event.resImageUrl }} style={styles.profilePic} />
+              }}>
+              <Image
+                source={{ uri: event.resImageUrl }}
+                style={styles.profilePic}
+              />
             </Marker>
             {event.users.length > 0 &&
               event.users.map((friend, i) => {
                 return (
                   <>
-                    <Marker coordinate={{ latitude: friend.courentLat, longitude: friend.courentLng }}>
+                    <Marker
+                      coordinate={{
+                        latitude: friend.courentLat,
+                        longitude: friend.courentLng,
+                      }}>
                       <View style={styles.circle}>
-                        <Image source={{ uri: friend.imageUrl }} style={styles.profilePic} />
+                        <Image
+                          source={{ uri: friend.imageUrl }}
+                          style={styles.profilePic}
+                        />
                       </View>
                     </Marker>
                     <MapViewDirections
@@ -265,231 +322,204 @@ export default function PreviewEvent() {
 }
 
 //! style ------------------------------------------------------
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    width: " 100%",
+    height: '100%',
+    width: ' 100%',
 
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   acceptButton: {
-    backgroundColor: "#80ED99",
+    backgroundColor: '#80ED99',
 
-    width: "30%",
-    marginRight: "2%",
-    borderRadius: "50%",
+    width: '30%',
+    marginRight: '2%',
+    borderRadius: '50%',
     height: 40,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   declineButton: {
-    backgroundColor: "#E63946",
-    marginLeft: "2%",
-    width: "30%",
+    backgroundColor: '#f07167',
+    marginLeft: '2%',
+    width: '30%',
 
-    borderRadius: "50%",
+    borderRadius: '50%',
     height: 40,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   uninviteButText: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   buttonContainer: {
-    width: "90%",
+    width: '90%',
     height: 60,
 
-    marginBottom: "2%",
-    marginTop: "2%",
-    marginLeft: "5%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
+    marginBottom: '2%',
+    marginTop: '2%',
+    marginLeft: '5%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   map: {
-    width: "90%",
-    height: 300,
-    backgroundColor: "white",
-    marginLeft: "5%",
-    marginTop: "5%",
+    width: '90%',
+    height: 340,
+    backgroundColor: 'white',
+    marginLeft: '5%',
+    marginTop: '-2%',
   },
   mapStyle: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
+    borderRadius: '8%',
   },
   scrollContainer: {
-    height: "90%",
-    width: "100%",
-    backgroundColor: "white",
+    height: '90%',
+    width: '100%',
+    backgroundColor: 'white',
   },
   card: {
     height: 275,
-    width: "90%",
-    marginLeft: "5%",
+    width: '90%',
+    marginLeft: '5%',
     // backgroundColor: "green",
-    shadowColor: "#171717",
+    shadowColor: '#171717',
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    backgroundColor: "white",
-    display: "flex",
-    flexDirection: "column",
-    borderRadius: "8%",
+    backgroundColor: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: '8%',
   },
   picDiv: {
-    width: "100%",
-    height: "60%",
-    borderTopLeftRadius: "8%",
-    borderTopRightRadius: "8%",
+    width: '100%',
+    height: '60%',
+    borderTopLeftRadius: '8%',
+    borderTopRightRadius: '8%',
   },
   pic: {
-    width: "100%",
-    height: "100%",
-    borderTopLeftRadius: "8%",
-    borderTopRightRadius: "8%",
+    width: '100%',
+    height: '100%',
+    borderTopLeftRadius: '8%',
+    borderTopRightRadius: '8%',
   },
   headlinHolder: {
-    height: "25%",
-    width: "100%",
+    height: '25%',
+    width: '100%',
 
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
   mainHeadlin: {
     fontSize: 20,
-    fontWeight: "600",
-    marginTop: "2%",
-    marginLeft: "2%",
+    fontWeight: '600',
+    marginTop: '2%',
+    marginLeft: '2%',
   },
   seconedHeadling: {
     fontSize: 18,
-    fontWeight: "200",
-    marginLeft: "2%",
-    color: "grey",
+    fontWeight: '200',
+    marginLeft: '2%',
+    color: 'grey',
   },
   resDescription: {
-    height: "15%",
-    width: "100%",
+    height: '15%',
+    width: '100%',
 
-    borderBottomRightRadius: "8%",
-    borderBottomLeftRadius: "8%",
+    borderBottomRightRadius: '8%',
+    borderBottomLeftRadius: '8%',
   },
 
   restDist: {
-    borderTopColor: "grey",
+    borderTopColor: 'grey',
     borderTopWidth: 2,
-    width: "95%",
-    marginLeft: "2.5%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
+    width: '95%',
+    marginLeft: '2.5%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   littleHeading: {
-    alignContent: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "90%",
+    alignContent: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '90%',
   },
   friendScrollContainer: {
-    width: "90%",
-    marginLeft: "5%",
-    marginTop: "5%",
+    width: '100%',
+    // marginLeft: '5%',
+    marginTop: '5%',
     height: 100,
   },
   userCard: {
-    width: 375,
-    marginTop: 10,
-
-    marginHorizontal: 10,
-    height: 80,
-    borderRadius: "8%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#171717",
+    width: 390,
+    height: 70,
+    backgroundColor: 'white',
+    marginLeft: 21,
+    borderRadius: '8%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#171717',
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   circle1: {
     height: 55,
     width: 55,
-    backgroundColor: "#70e000",
+    backgroundColor: COLORS.primary,
     borderRadius: 50,
-    marginLeft: 10,
-    marginTop: 7,
-  },
-  circle2: {
-    height: 55,
-    width: 55,
-    backgroundColor: "#f07167",
-    borderRadius: 50,
-    marginLeft: 10,
-    marginTop: 7,
-  },
-  circle3: {
-    height: 55,
-    width: 55,
-    backgroundColor: "#edae49",
-    borderRadius: 50,
-    marginLeft: 10,
-    marginTop: 7,
+    shadowColor: 'black',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
   },
   profilePic3: {
     height: 50,
     width: 50,
     borderRadius: 50,
-    position: "absolute",
-    alignSelf: "center",
+    position: 'absolute',
+    alignSelf: 'center',
     marginTop: 2.5,
   },
   userName: {
     fontSize: 25,
-    fontWeight: "600",
-    color: "black",
-    shadowColor: "white",
+    fontWeight: '600',
+    color: 'black',
+    shadowColor: 'white',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
   nameIconHolder: {
-    width: "65%",
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    width: '65%',
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   status1: {
     fontSize: 26,
-    fontWeight: "600",
-    color: "#70e000",
-    marginLeft: 10,
-  },
-  status2: {
-    fontSize: 26,
-    fontWeight: "600",
-    marginLeft: 10,
-    color: "#f07167",
-  },
-  status3: {
-    fontSize: 26,
-    fontWeight: "600",
-    marginLeft: 10,
-    color: "#edae49",
+    fontWeight: '600',
+    color: 'black',
   },
   iconHolder: {
-    width: "50%",
-    display: "flex",
-    flexDirection: "row",
+    width: '50%',
+    display: 'flex',
+    flexDirection: 'row',
   },
   profilePic: {
     height: 48,
@@ -502,8 +532,47 @@ const styles = StyleSheet.create({
   circle: {
     height: 55,
     width: 55,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 50,
+  },
+  textTiming: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '50%',
+  },
+  profilePic2: {
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginTop: 3,
+  },
+  userDistance: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: '70%',
+    borderRightWidth: 2,
+    borderRightColor: COLORS.grayLight,
+    width: '50%',
+  },
+  restName: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: '2%',
+    marginLeft: '2%',
+  },
+  userMethed: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: '70%',
+    width: '50%',
   },
 });
 //  container: {
