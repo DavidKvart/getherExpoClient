@@ -91,6 +91,26 @@ const EventProvider = ({ children }) => {
       try {
         let result = await axios.post(`https://gethersocketserver.onrender.com/events`, temp);
 
+        let body = "Join : ";
+        result.data.users.map((user) => {
+          body = body + user.name + ", ";
+        });
+        body = body + "for a wonderful time at: " + result.data.resName + "! youre room ID is : " + result.data.roomID;
+        result.data.users.map((friend, index) => {
+          if (friend._id != user._id) {
+            if (user.expoToken != "no token provided") {
+              let message = {
+                to: friend.expoToken,
+                sound: "default",
+                title: "You were invited to a meal!",
+                body: body,
+                data: { someData: "goes here" },
+              };
+              sendPushNotification(message);
+            }
+          }
+        });
+
         setEvent(result.data);
         return true;
       } catch (error) {
@@ -246,3 +266,20 @@ const EventProvider = ({ children }) => {
   );
 };
 export default EventProvider;
+
+const sendPushNotification = async (message) => {
+  await axios
+    .post("https://exp.host/--/api/v2/push/send", message, {
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
