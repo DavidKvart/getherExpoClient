@@ -34,7 +34,7 @@ import SelectButtonForTransport from './small/selectTransportMethod';
 import axios from 'axios';
 export default function PickRes() {
   //! states
-  const { event, createEvent } = useContext(EventContext);
+  const { event, createEvent, resetEventState } = useContext(EventContext);
   const { user, deviceLocaition, signOut } = useContext(UserContext);
   const [resturant, setResturant] = useState('');
   const [usersTiming, setUsersTiming] = useState([]);
@@ -207,7 +207,7 @@ export default function PickRes() {
     });
   useEffect(() => {
     translateY.value = withSpring(SCREEN_HEIGHT / 4.5);
-    setData(staticData);
+
     if (event) {
       let temp = event.users.map((friend) => {
         return {
@@ -215,12 +215,21 @@ export default function PickRes() {
           longitude: friend.courentLng,
         };
       });
-      // mapRef.current?.fitToCoordinates(temp, { bottom: 300, right: 30, left: 30, top: 100 });
+      mapRef.current?.fitToCoordinates(temp, {
+        bottom: 300,
+        right: 30,
+        left: 30,
+        top: 100,
+      });
     }
-    // sortRestorants();
+    console.log('befor sort resturant-----------------');
+    sortRestorants();
   }, [tempData]);
+  useEffect(() => {
+    setData(staticData);
+  }, []);
   const sortRestorants = async () => {
-    temp = { data: tempData };
+    let temp = { data: tempData };
     if (temp) {
       let tilesToDelete = [];
       temp.data.map((res, index) => {
@@ -236,8 +245,9 @@ export default function PickRes() {
       for (let i = tilesToDelete.length - 1; i >= 0; i--) {
         temp.data.splice(tilesToDelete[i], 1);
       }
+
       temp.data.sort((a, b) => a.average - b.average);
-      console.log(temp.data.length);
+
       setData(temp);
     }
   };
@@ -385,8 +395,10 @@ export default function PickRes() {
               <Text style={styles.createEventText}>create event</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity activeOpacity={0.7} style={styles.createEvent}>
-              {/* onPress={getResturants} */}
+            <TouchableOpacity
+              onPress={getResturants}
+              activeOpacity={0.7}
+              style={styles.createEvent}>
               <Text style={styles.createEventText}>search here</Text>
             </TouchableOpacity>
           )}
@@ -412,7 +424,7 @@ export default function PickRes() {
             contentContainerStyle={styles.scrollContainer}>
             <View style={styles.cardContainer}>
               {event.users.length > 0 &&
-                event.users.map((friend) => {
+                event.users.map((friend, i) => {
                   let icon = 'walking';
                   switch (friend.transportMode) {
                     case 'DRIVING':
@@ -428,7 +440,17 @@ export default function PickRes() {
                   return (
                     <View style={styles.userCard}>
                       <View style={styles.textTiming}>
-                        <View style={styles.circle1}>
+                        <View
+                          style={{
+                            height: 55,
+                            width: 55,
+                            backgroundColor: colors[i],
+                            borderRadius: 50,
+                            shadowColor: 'black',
+                            shadowOffset: { width: 1, height: 1 },
+                            shadowOpacity: 0.8,
+                            shadowRadius: 2,
+                          }}>
                           <Image
                             source={{ uri: friend.imageUrl }}
                             style={styles.profilePic2}
@@ -484,22 +506,24 @@ export default function PickRes() {
                 if (place?.detail == 0) {
                   // empty resturant
                   return (
-                    <View style={styles.card} key={i} ref={elRefs[i]}>
+                    <View style={styles.card} key={'asdasdas'} ref={elRefs[i]}>
                       <Image
                         style={styles.pic}
                         source={{
-                          uri: 'https://res.cloudinary.com/dfcmf6gbn/image/upload/v1675162489/thbiktvn9wvnlch4a3dx.jpg',
+                          uri: 'https://media-cdn.tripadvisor.com/media/photo-l/0c/11/6d/c4/rubi-bar.jpg',
                         }}
                       />
+
                       <View style={styles.dits}>
-                        <Text style={styles.restName}>meat bar</Text>
+                        <Text style={styles.restName}>Meat Bar</Text>
                         <View style={styles.typeButton}>
                           <Text style={styles.restType}>
-                            {/* {place?.cuisine[1]?.name} , {place?.cuisine[2]?.name}{" "} */}
+                            drinks
+                            {', '}
+                            food{' '}
                           </Text>
                           <View style={styles.buttonContain}>
-                            <TouchableWithoutFeedback
-                              onPress={() => changeResturant(place)}>
+                            <TouchableWithoutFeedback onPress={() => []}>
                               <FontAwesome5
                                 name="directions"
                                 style={{
@@ -516,8 +540,8 @@ export default function PickRes() {
                           ....................................................................................................
                         </Text>
                         <View style={styles.Dist}>
-                          <Text style={styles.restDist}>
-                            {/* {place.rating}{" "} */}
+                          <View style={styles.DistIconHolder}>
+                            <Text style={styles.restDist}>4.5</Text>
                             <FontAwesome
                               name="star"
                               style={{
@@ -526,8 +550,10 @@ export default function PickRes() {
                                 fontWeight: '100',
                               }}
                             />
-                            {'                 '}
-                            {/* {place.open_now_text}{" "} */}
+                          </View>
+
+                          <View style={styles.DistIconHolder}>
+                            <Text style={styles.restDist}>Open now</Text>
                             <FontAwesome5
                               name="clock"
                               style={{
@@ -536,8 +562,10 @@ export default function PickRes() {
                                 fontWeight: '100',
                               }}
                             />
-                            {'               '}
-                            {/* {Math.floor(place.average * 1000)}m{" "} */}
+                          </View>
+
+                          <View style={styles.DistIconHolder}>
+                            <Text style={styles.restDist}>1234</Text>
                             <FontAwesome5
                               name="walking"
                               style={{
@@ -546,7 +574,7 @@ export default function PickRes() {
                                 fontWeight: '100',
                               }}
                             />
-                          </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
@@ -595,8 +623,10 @@ export default function PickRes() {
                           ....................................................................................................
                         </Text>
                         <View style={styles.Dist}>
-                          <Text style={styles.restDist}>
-                            {place?.rating && place.rating}{' '}
+                          <View style={styles.DistIconHolder}>
+                            <Text style={styles.restDist}>
+                              {place?.rating && place.rating}{' '}
+                            </Text>
                             <FontAwesome
                               name="star"
                               style={{
@@ -605,8 +635,12 @@ export default function PickRes() {
                                 fontWeight: '100',
                               }}
                             />
-                            {'                 '}
-                            {place?.open_now_text && place.open_now_text}{' '}
+                          </View>
+
+                          <View style={styles.DistIconHolder}>
+                            <Text style={styles.restDist}>
+                              {place?.open_now_text && place.open_now_text}{' '}
+                            </Text>
                             <FontAwesome5
                               name="clock"
                               style={{
@@ -615,8 +649,12 @@ export default function PickRes() {
                                 fontWeight: '100',
                               }}
                             />
-                            {'               '}
-                            {Math.floor(place.average * 1000)}m{' '}
+                          </View>
+
+                          <View style={styles.DistIconHolder}>
+                            <Text style={styles.restDist}>
+                              {Math.floor(place.average * 1000)}m{' '}
+                            </Text>
                             <FontAwesome5
                               name="walking"
                               style={{
@@ -625,7 +663,7 @@ export default function PickRes() {
                                 fontWeight: '100',
                               }}
                             />
-                          </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
@@ -758,6 +796,13 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: '8%',
     borderBottomRightRadius: '8%',
     marginBottom: '-3%',
+    marginLeft: '2%',
+    marginRight: '2%',
+    width: '96%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    flexDirection: 'row',
   },
   line: {
     width: 75,
@@ -791,7 +836,7 @@ const styles = StyleSheet.create({
   restDist: {
     fontSize: 18,
     fontWeight: '200',
-    marginLeft: '2%',
+
     color: 'grey',
   },
   dot: {
@@ -923,18 +968,19 @@ const styles = StyleSheet.create({
     borderRadius: '8%',
   },
   circle3: {
-    height: 55,
-    width: 55,
-    backgroundColor: '#edae49',
+    height: 85,
+    width: 85,
+    backgroundColor: 'white', //edae49
     borderRadius: 50,
     marginLeft: 10,
-    marginTop: 7,
+    marginTop: 130,
+    position: 'absolute',
   },
   profilePic3: {
     height: 75,
     width: 75,
     borderRadius: 50,
-
+    marginTop: 2,
     alignSelf: 'center',
   },
   userName: {
@@ -977,6 +1023,7 @@ const styles = StyleSheet.create({
     height: '18.2%',
     width: '100%',
     alignItems: 'center',
+    // justifyContent: 'flex-end',
   },
   userNameDiv: {
     marginTop: '20%',
@@ -1038,5 +1085,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: '70%',
     width: '50%',
+  },
+  DistIconHolder: {
+    width: 100,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });

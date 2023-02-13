@@ -53,8 +53,15 @@ const socket = io.connect(`https://gethersocketserverreal.onrender.com`);
 
 export default function LiveView() {
   const navigation = useNavigation();
-  const { sleep, event, createEvent, refreshEvent, removeUser, deleteEvent } =
-    useContext(EventContext);
+  const {
+    sleep,
+    event,
+    createEvent,
+    refreshEvent,
+    removeUser,
+    deleteEvent,
+    resetEventState,
+  } = useContext(EventContext);
   const [usersAdress, setUsersAdress] = useState([]);
   const [usersLocaition, setUsersLocaition] = useState('');
   const [usersTiming, setUsersTiming] = useState({});
@@ -254,6 +261,7 @@ export default function LiveView() {
       await refreshEvent(event.roomID);
     });
     socket.on('event_was_deleted', () => {
+      resetEventState();
       navigation.navigate(ROUTES.HOME_TAB);
       Alert.alert(`this event was deleted by ${data.name} `);
     });
@@ -292,310 +300,327 @@ export default function LiveView() {
   };
 
   return (
-    <View style={styles.container}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={{
-          latitude: parseFloat(event.resLat),
-          longitude: parseFloat(event.resLng),
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}>
-        {event
-          ? event.users.map((friend, i) => {
-              return (
-                <>
-                  <Marker
-                    coordinate={{
-                      latitude: parseFloat(friend.courentLat),
-                      longitude: parseFloat(friend.courentLng),
-                    }}>
-                    <Image
-                      source={{ uri: friend.imageUrl }}
-                      style={styles.profilePic}
-                    />
-                  </Marker>
-                  <MapViewDirections
-                    origin={{
-                      latitude: parseFloat(friend.courentLat),
-                      longitude: parseFloat(friend.courentLng),
-                      latitudeDelta: 0.0922,
-                      longitudeDelta: 0.0421,
-                    }}
-                    destination={{
-                      latitude: parseFloat(event.resLat),
-                      longitude: parseFloat(event.resLng),
-                      latitudeDelta: 0.0922,
-                      longitudeDelta: 0.0421,
-                    }}
-                    apikey={GOOGLE_API_key}
-                    strokeWidth={3}
-                    strokeColor={colors[i]}
-                    mode={friend.transportMode}
-                    optimizeWaypoints={true}
-                    onReady={(result) => {
-                      let temp = usersTiming;
+    <>
+      {event.resName && (
+        <View style={styles.container}>
+          <MapView
+            ref={mapRef}
+            style={styles.map}
+            initialRegion={{
+              latitude: parseFloat(event.resLat),
+              longitude: parseFloat(event.resLng),
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}>
+            {event
+              ? event.users.map((friend, i) => {
+                  return (
+                    <>
+                      <Marker
+                        coordinate={{
+                          latitude: parseFloat(friend.courentLat),
+                          longitude: parseFloat(friend.courentLng),
+                        }}
+                        anchor={{ x: 0.5, y: 1 }}>
+                        <Image
+                          source={{ uri: friend.imageUrl }}
+                          style={styles.profilePic}
+                        />
+                      </Marker>
+                      <MapViewDirections
+                        origin={{
+                          latitude: parseFloat(friend.courentLat),
+                          longitude: parseFloat(friend.courentLng),
+                          latitudeDelta: 0.0922,
+                          longitudeDelta: 0.0421,
+                        }}
+                        destination={{
+                          latitude: parseFloat(event.resLat),
+                          longitude: parseFloat(event.resLng),
+                          latitudeDelta: 0.0922,
+                          longitudeDelta: 0.0421,
+                        }}
+                        apikey={GOOGLE_API_key}
+                        strokeWidth={3}
+                        strokeColor={colors[i]}
+                        mode={friend.transportMode}
+                        optimizeWaypoints={true}
+                        onReady={(result) => {
+                          let temp = usersTiming;
 
-                      temp[friend._id] = {
-                        duration: result.duration,
-                        distance: result.distance,
-                      };
-                      setUsersTiming(temp);
-                    }}
-                  />
-                </>
-              );
-            })
-          : ''}
+                          temp[friend._id] = {
+                            duration: result.duration,
+                            distance: result.distance,
+                          };
+                          setUsersTiming(temp);
+                        }}
+                      />
+                    </>
+                  );
+                })
+              : ''}
 
-        <Marker
-          coordinate={{
-            latitude: parseFloat(event.resLat),
-            longitude: parseFloat(event.resLng),
-          }}>
-          <Image
-            source={{ uri: event.resImageUrl }}
-            style={styles.profilePic}
-          />
-        </Marker>
-      </MapView>
+            <Marker
+              coordinate={{
+                latitude: parseFloat(event.resLat),
+                longitude: parseFloat(event.resLng),
+              }}
+              anchor={{ x: 0.5, y: 1 }}>
+              <Image
+                source={{ uri: event.resImageUrl }}
+                style={styles.profilePic}
+              />
+            </Marker>
+          </MapView>
 
-      <View style={styles.bigContainer}>
-        <View style={{ display: 'flex', flexDirection: 'row', top: '4%' }}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.frindBtn}
-            onPress={() => setfrindVisable(!frindVisable)}>
-            <Image
-              source={require('../../assets/frinds.png')}
-              style={{ height: '80%', width: '80%' }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.navBtn}
-            onPress={() => setVisible(true)}>
-            <View style={styles.line2} />
-            <View style={styles.line2} />
-            <View style={styles.line2} />
-          </TouchableOpacity>
-        </View>
-        {frindVisable ? (
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            snapToInterval={400}
-            decelerationRate="fast"
-            contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.cardContainer}>
-              {event
-                ? event.users.map((friend, index) => {
-                    let statusIcon = '';
-                    let statusStyle = '';
-                    let circleStyle = '';
-
-                    if (event.usersStatus[index] === 'approved') {
-                      statusIcon = 'like';
-                      statusStyle = 'status1';
-                      circleStyle = 'circle1';
-                    } else if (event.usersStatus[index] === 'disapproved') {
-                      statusIcon = 'dislike';
-                      statusStyle = 'status2';
-                      circleStyle = 'circle2';
-                    } else {
-                      statusIcon = 'hourglass-start';
-                      statusStyle = 'status3';
-                      circleStyle = 'circle3';
-                    }
-                    let icon = 'walking';
-                    switch (friend.transportMode) {
-                      case 'DRIVING':
-                        icon = 'car-side';
-                        break;
-                      case 'BICYCLING':
-                        icon = 'bicycle';
-                        break;
-                      case 'TRANSIT':
-                        icon = 'train';
-                        break;
-                    }
-                    return (
-                      <>
-                        <TouchableWithoutFeedback onPress={() => pressModal()}>
-                          <View
-                            style={[
-                              styles.card,
-                              expanded && styles.cardExpanded,
-                            ]}>
-                            {/* <FontAwesome5
-                              name={icon}
-                              style={{
-                                color: 'grey',
-                                fontSize: 25,
-                                fontWeight: '100',
-                              }}
-                            /> */}
-                            <View style={styles[circleStyle]}>
-                              <Image
-                                source={{ uri: friend.imageUrl }}
-                                style={styles.profilePic2}
-                              />
-                            </View>
-                            <Text style={styles.usernName2}>{friend.name}</Text>
-
-                            {info ? (
-                              <Text style={styles.clickFor}>
-                                click for more
-                              </Text>
-                            ) : (
-                              <Text style={styles.clickFor}>
-                                click for less
-                              </Text>
-                            )}
-                            <FontAwesome5 name={icon} style={styles.status4} />
-                            <Fontiso
-                              name={statusIcon}
-                              style={styles[statusStyle]}
-                            />
-                            {expanded ? getuserscards(friend, index) : ''}
-                          </View>
-                        </TouchableWithoutFeedback>
-                      </>
-                    );
-                  })
-                : ''}
-            </View>
-          </ScrollView>
-        ) : (
-          ''
-        )}
-      </View>
-      <GestureDetector gesture={gesture}>
-        <Animated.View
-          showsVerticalScrollIndicator={false}
-          style={[styles.info, rBottomSheetStyle]}>
-          <View style={styles.line} />
-          <View style={styles.resInfo}>
-            <Image style={styles.pic} source={{ uri: event.resImageUrl }} />
-            <View style={styles.resInfoText}>
-              <TouchableOpacity onPress={() => Linking.openURL(event.resLink)}>
-                <Text style={styles.restTitle}>{event.resName}</Text>
-              </TouchableOpacity>
-
-              <Text
-                style={{ marginLeft: '20.5%', marginTop: '10%', fontSize: 16 }}>
-                {event.cuisine[0]}, {event.cuisine[1]}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: '200',
-                  marginLeft: '21%',
-                  marginTop: '5%',
-                }}>
-                {event.rating}
-                <FontAwesome
-                  name="star"
-                  style={{
-                    color: 'black',
-                    fontSize: 23,
-                    fontWeight: '100',
-                  }}
-                />
-              </Text>
+          <View style={styles.bigContainer}>
+            <View style={{ display: 'flex', flexDirection: 'row', top: '4%' }}>
               <TouchableOpacity
                 activeOpacity={0.7}
-                style={styles.invite}
-                onPress={() => navigation.navigate(ROUTES.ADD_FREINDS)}>
-                <Text style={styles.uninviteButText}>Invite more</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.deleteEv}
-                onPress={() =>
-                  Alert.alert(
-                    'Delete event',
-                    `This action will delete the event`,
-                    [
-                      {
-                        text: 'Delete',
-                        onPress: () => deleteTheCourentEvent(),
-                      },
-                      { text: 'Cancel' },
-                    ]
-                  )
-                }>
-                <Text style={styles.uninviteButText}>Delete event</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Animated.View>
-      </GestureDetector>
-      <Modal
-        visible={visible}
-        animationType="fade"
-        transparent={true}
-        style={styles.modalStyle}>
-        <View style={styles.sideBarDiv}>
-          <View style={styles.sideBarContext}>
-            <View style={styles.userHeader}>
-              <View style={styles.circle4}>
+                style={styles.frindBtn}
+                onPress={() => setfrindVisable(!frindVisable)}>
                 <Image
-                  source={{ uri: user.imageUrl }}
-                  style={styles.profilePic3}
+                  source={require('../../assets/frinds.png')}
+                  style={{ height: '80%', width: '80%' }}
                 />
-              </View>
-            </View>
-            <View style={styles.userNameDiv}>
-              <Text style={styles.userName}>{user.name}</Text>
-            </View>
-            <View style={styles.sideBarButtons}>
+              </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.7}
-                style={styles.sideBarTouchable}
-                onPress={() => {
-                  setVisible(false);
+                style={styles.navBtn}
+                onPress={() => setVisible(true)}>
+                <View style={styles.line2} />
+                <View style={styles.line2} />
+                <View style={styles.line2} />
+              </TouchableOpacity>
+            </View>
+            {frindVisable ? (
+              <ScrollView
+                showsHorizontalScrollIndicator={false}
+                horizontal={true}
+                snapToInterval={400}
+                decelerationRate="fast"
+                contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.cardContainer}>
+                  {event
+                    ? event.users.map((friend, index) => {
+                        let statusIcon = '';
+                        let statusStyle = '';
+                        let circleStyle = '';
 
-                  navigation.navigate(ROUTES.JOIN_EVENT);
-                }}>
-                <Text style={styles.sideBarText}>Join event</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable}
-                onPress={() => {
-                  setVisible(false);
+                        if (event.usersStatus[index] === 'approved') {
+                          statusIcon = 'like';
+                          statusStyle = 'status1';
+                          circleStyle = 'circle1';
+                        } else if (event.usersStatus[index] === 'disapproved') {
+                          statusIcon = 'dislike';
+                          statusStyle = 'status2';
+                          circleStyle = 'circle2';
+                        } else {
+                          statusIcon = 'hourglass-start';
+                          statusStyle = 'status3';
+                          circleStyle = 'circle3';
+                        }
+                        let icon = 'walking';
+                        switch (friend.transportMode) {
+                          case 'DRIVING':
+                            icon = 'car-side';
+                            break;
+                          case 'BICYCLING':
+                            icon = 'bicycle';
+                            break;
+                          case 'TRANSIT':
+                            icon = 'train';
+                            break;
+                        }
+                        return (
+                          <>
+                            <TouchableWithoutFeedback
+                              onPress={() => pressModal()}>
+                              <View
+                                style={[
+                                  styles.card,
+                                  expanded && styles.cardExpanded,
+                                ]}>
+                                {/* <FontAwesome5
+                            name={icon}
+                            style={{
+                              color: 'grey',
+                              fontSize: 25,
+                              fontWeight: '100',
+                            }}
+                          /> */}
+                                <View style={styles[circleStyle]}>
+                                  <Image
+                                    source={{ uri: friend.imageUrl }}
+                                    style={styles.profilePic2}
+                                  />
+                                </View>
+                                <Text style={styles.usernName2}>
+                                  {friend.name}
+                                </Text>
 
-                  navigation.navigate(ROUTES.HOME_TAB);
-                }}>
-                <Text style={styles.sideBarText}>Home Page</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable}>
-                <Text style={styles.sideBarText}>future event</Text>
-              </TouchableOpacity>
-              <SelectButtonForTransport eventExist={true} />
-              <TouchableOpacity
-                onPress={signOut}
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable && { marginTop: '70%' }}>
-                <Text style={styles.sideBarText}>sign out</Text>
-              </TouchableOpacity>
-            </View>
+                                {info ? (
+                                  <Text style={styles.clickFor}>
+                                    click for more
+                                  </Text>
+                                ) : (
+                                  <Text style={styles.clickFor}>
+                                    click for less
+                                  </Text>
+                                )}
+                                <FontAwesome5
+                                  name={icon}
+                                  style={styles.status4}
+                                />
+                                <Fontiso
+                                  name={statusIcon}
+                                  style={styles[statusStyle]}
+                                />
+                                {expanded ? getuserscards(friend, index) : ''}
+                              </View>
+                            </TouchableWithoutFeedback>
+                          </>
+                        );
+                      })
+                    : ''}
+                </View>
+              </ScrollView>
+            ) : (
+              ''
+            )}
           </View>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.navBtnModal}
-            onPress={() => setVisible(false)}>
-            <View style={styles.line2} />
-            <View style={styles.line2} />
-            <View style={styles.line2} />
-          </TouchableOpacity>
+          <GestureDetector gesture={gesture}>
+            <Animated.View
+              showsVerticalScrollIndicator={false}
+              style={[styles.info, rBottomSheetStyle]}>
+              <View style={styles.line} />
+              <View style={styles.resInfo}>
+                <Image style={styles.pic} source={{ uri: event.resImageUrl }} />
+                <View style={styles.resInfoText}>
+                  <TouchableOpacity
+                    onPress={() => Linking.openURL(event.resLink)}>
+                    <Text style={styles.restTitle}>{event.resName}</Text>
+                  </TouchableOpacity>
+
+                  <Text
+                    style={{
+                      marginLeft: '20.5%',
+                      marginTop: '10%',
+                      fontSize: 16,
+                    }}>
+                    {event.cuisine[0]}, {event.cuisine[1]}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: '200',
+                      marginLeft: '21%',
+                      marginTop: '5%',
+                    }}>
+                    {event.rating}
+                    <FontAwesome
+                      name="star"
+                      style={{
+                        color: 'black',
+                        fontSize: 23,
+                        fontWeight: '100',
+                      }}
+                    />
+                  </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.invite}
+                    onPress={() => navigation.navigate(ROUTES.ADD_FREINDS)}>
+                    <Text style={styles.uninviteButText}>Invite more</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.deleteEv}
+                    onPress={() =>
+                      Alert.alert(
+                        'Delete event',
+                        `This action will delete the event`,
+                        [
+                          {
+                            text: 'Delete',
+                            onPress: () => deleteTheCourentEvent(),
+                          },
+                          { text: 'Cancel' },
+                        ]
+                      )
+                    }>
+                    <Text style={styles.uninviteButText}>Delete event</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Animated.View>
+          </GestureDetector>
+          <Modal
+            visible={visible}
+            animationType="fade"
+            transparent={true}
+            style={styles.modalStyle}>
+            <View style={styles.sideBarDiv}>
+              <View style={styles.sideBarContext}>
+                <View style={styles.userHeader}>
+                  <View style={styles.circle4}>
+                    <Image
+                      source={{ uri: user.imageUrl }}
+                      style={styles.profilePic3}
+                    />
+                  </View>
+                </View>
+                <View style={styles.userNameDiv}>
+                  <Text style={styles.userName}>{user.name}</Text>
+                </View>
+                <View style={styles.sideBarButtons}>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.sideBarTouchable}
+                    onPress={() => {
+                      setVisible(false);
+
+                      navigation.navigate(ROUTES.JOIN_EVENT);
+                    }}>
+                    <Text style={styles.sideBarText}>Join event</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.sideBarTouchable}
+                    onPress={() => {
+                      setVisible(false);
+
+                      navigation.navigate(ROUTES.HOME_TAB);
+                    }}>
+                    <Text style={styles.sideBarText}>Home Page</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.sideBarTouchable}>
+                    <Text style={styles.sideBarText}>future event</Text>
+                  </TouchableOpacity>
+                  <SelectButtonForTransport eventExist={true} />
+                  <TouchableOpacity
+                    onPress={signOut}
+                    activeOpacity={0.7}
+                    style={styles.sideBarTouchable && { marginTop: '70%' }}>
+                    <Text style={styles.sideBarText}>sign out</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.navBtnModal}
+                onPress={() => setVisible(false)}>
+                <View style={styles.line2} />
+                <View style={styles.line2} />
+                <View style={styles.line2} />
+              </TouchableOpacity>
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      )}
+    </>
   );
 }
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');

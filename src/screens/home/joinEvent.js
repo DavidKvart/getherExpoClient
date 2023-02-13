@@ -23,7 +23,8 @@ import LiveView from './LiveView';
 const JoinEvent = () => {
   const navigation = useNavigation();
   const [room, setRoom] = useState('');
-  const { enterRoom, changeStatus, event } = useContext(EventContext);
+  const { enterRoom, changeStatus, event, resetEventState } =
+    useContext(EventContext);
   const [shakeAnim] = useState(new Animated.Value(0));
   useEffect(() => {
     console.log(event);
@@ -35,6 +36,7 @@ const JoinEvent = () => {
         },
         {
           text: 'no',
+          onPress: () => resetEventState(),
         },
       ]);
     }

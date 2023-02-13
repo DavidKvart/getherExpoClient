@@ -6,6 +6,7 @@ import {
   ScrollView,
   Image,
   Button,
+  Alert,
   TouchableOpacity,
 } from 'react-native';
 import * as Contacts from 'expo-contacts';
@@ -21,7 +22,7 @@ import CheckBoxComponentContacts from './small/sendSMS';
 export default function AddFreinds() {
   const navigation = useNavigation();
   const [users, setUsers] = useState('');
-  const { addFriends, event } = useContext(EventContext);
+  const { addFriends, event, resetEventState } = useContext(EventContext);
   const { getAllUsers, user, finished, sleep } = useContext(UserContext);
 
   const scrollRef = useRef();
@@ -33,6 +34,23 @@ export default function AddFreinds() {
   const [usersSelectedIndex, setUsersSelectedIndex] = useState([]);
   const [paginaitionIndex, setPaginationIndex] = useState(1);
   useEffect(() => {
+    if (event.roomID) {
+      Alert.alert('you are already in event', `would you like to getThere?`, [
+        {
+          text: 'yes',
+          onPress: () => navigation.navigate(ROUTES.LIVE_VIEW),
+        },
+        {
+          text: 'no',
+          onPress: () => resetEventState(),
+        },
+      ]);
+    }
+    if (event.users.length > 0) {
+      resetEventState();
+      navigation.navigate(ROUTES.HOME_TAB);
+    }
+
     let x = async () => {
       let temp = [];
 
@@ -85,6 +103,9 @@ export default function AddFreinds() {
       }
     };
     x();
+    return () => {
+      setUsersSelected([]);
+    };
   }, []);
   useEffect(() => {
     if (!searchText) {

@@ -13,15 +13,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { useContext } from 'react';
 import { UserContext } from '../../../context/usersContext';
-import { useFonts } from 'expo-font';
+
 import SelectButtonForTransport from './small/selectTransportMethod';
 import { EventContext } from '../../../context/eventContexts';
 const Home = () => {
-  let [font] = useFonts({
-    oleo: require('../../../assets/fonts/OleoScript-Regular.ttf'),
-  });
-
-  console.log(font);
   const { signOut, user, sleep } = useContext(UserContext);
 
   const [visible, setVisible] = useState(false);

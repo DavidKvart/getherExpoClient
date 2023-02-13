@@ -30,7 +30,18 @@ const EventProvider = ({ children }) => {
   const [type, setType] = useState('');
 
   //! functions
-
+  // clear state
+  const resetEventState = () => {
+    setEvent({
+      resName: '',
+      rating: '',
+      resLink: '',
+      resLng: '',
+      resLat: '',
+      resImageUrl: '',
+      users: [],
+    });
+  };
   //* pick users from db to add to the event
   const addFriends = async (users) => {
     if (users.length > 0) {
@@ -145,6 +156,15 @@ const EventProvider = ({ children }) => {
         `https://gethersocketserver.onrender.com/events` + '/' + id
       );
       if (result.data == 'event was deleted') {
+        setEvent({
+          resName: '',
+          rating: '',
+          resLink: '',
+          resLng: '',
+          resLat: '',
+          resImageUrl: '',
+          users: [],
+        });
         Alert.alert('event was secsesfuly deleted');
         return true;
       } else return false;
@@ -309,6 +329,7 @@ const EventProvider = ({ children }) => {
         addFriends,
         refreshEvent,
         removeUser,
+        resetEventState,
         addFriendsToExisting,
       }}>
       {children}
