@@ -44,11 +44,12 @@ const Login = () => {
     let result = await login(data);
 
     reset();
-    result === true
-      ? navigation.navigate(ROUTES.HOME)
-      : Alert.alert('wrong passowrd or email');
+    result === true ? navigation.navigate(ROUTES.HOME) : handleUnsecsses();
   };
-
+  const handleUnsecsses = () => {
+    setRegisterClicked(false);
+    Alert.alert('wrong passowrd or email');
+  };
   return (
     <SafeAreaView style={styles.main}>
       <View style={styles.container}>

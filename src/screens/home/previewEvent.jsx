@@ -52,242 +52,250 @@ export default function PreviewEvent() {
     });
   }, []);
   return (
-    <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollContainer}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.declineButton}
-            onPress={() => {
-              acceptEvent('disapproved');
-            }}>
-            <Text style={styles.uninviteButText}>Decline</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.acceptButton}
-            onPress={() => {
-              acceptEvent('approved');
-            }}>
-            <Text style={styles.uninviteButText}>Enter event</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.card}>
-          <View style={styles.picDiv}>
-            <Image style={styles.pic} source={{ uri: event.resImageUrl }} />
-          </View>
-
-          <View style={styles.headlinHolder}>
-            <Text style={styles.mainHeadlin}>{event.resName}</Text>
-            <Text style={styles.seconedHeadling}>
-              {event?.cuisine[0]} , {event?.cuisine[1]}
-            </Text>
-          </View>
-
-          {/* <Text style={styles.dot}>....................................................................................................</Text> */}
-
-          <View style={styles.resDescription}>
-            <View style={styles.restDist}>
-              <Text style={styles.littleHeading}>
-                {event.rating}
-                <FontAwesome
-                  name="star"
-                  style={{
-                    color: 'grey',
-                    fontSize: 23,
-                    fontWeight: '100',
-                  }}
-                />
-              </Text>
-
-              <Text style={styles.littleHeading}>
-                {' '}
-                {Math.floor(10 * 1000)}m{' '}
-                <FontAwesome5
-                  name="walking"
-                  style={{
-                    color: 'grey',
-                    fontSize: 25,
-                    fontWeight: '100',
-                  }}
-                />
-              </Text>
-
-              <Text style={styles.littleHeading}>
-                {' '}
-                learn more
-                <FontAwesome5
-                  name="walking"
-                  style={{
-                    color: 'grey',
-                    fontSize: 25,
-                    fontWeight: '100',
-                  }}
-                />
-              </Text>
+    <>
+      {event.resName && (
+        <View style={styles.container}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.scrollContainer}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.declineButton}
+                onPress={() => {
+                  acceptEvent('disapproved');
+                }}>
+                <Text style={styles.uninviteButText}>Decline</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.acceptButton}
+                onPress={() => {
+                  acceptEvent('approved');
+                }}>
+                <Text style={styles.uninviteButText}>Enter event</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-        </View>
+            <View style={styles.card}>
+              <View style={styles.picDiv}>
+                <Image style={styles.pic} source={{ uri: event.resImageUrl }} />
+              </View>
 
-        <ScrollView
-          style={styles.friendScrollContainer}
-          showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          snapToInterval={400}
-          decelerationRate="fast">
-          {event &&
-            event.users.map((friend, index) => {
-              let statusIcon = '';
+              <View style={styles.headlinHolder}>
+                <Text style={styles.mainHeadlin}>{event.resName}</Text>
+                <Text style={styles.seconedHeadling}>
+                  {event?.cuisine && event?.cuisine[0]} ,{' '}
+                  {event.cuisine && event?.cuisine[1]}
+                </Text>
+              </View>
 
-              if (event.usersStatus[index] === 'approved') {
-                statusIcon = 'like';
-              } else if (event.usersStatus[index] === 'disapproved') {
-                statusIcon = 'dislike';
-              } else {
-                statusIcon = 'hourglass-start';
-              }
-              let icon = 'walking';
-              switch (friend.transportMode) {
-                case 'DRIVING':
-                  icon = 'car-side';
-                  break;
-                case 'BICYCLING':
-                  icon = 'bicycle';
-                  break;
-                case 'TRANSIT':
-                  icon = 'train';
-                  break;
-              }
-              return (
-                <View style={styles.userCard}>
-                  <View style={styles.textTiming}>
-                    <View style={styles.circle1}>
-                      <Image
-                        source={{ uri: friend.imageUrl }}
-                        style={styles.profilePic2}
-                      />
-                    </View>
-                    <View style={styles.userDistance}>
-                      <Text style={styles.restName}>{friend.name}</Text>
-                      <Text style={{ color: COLORS.gray }}>Friend name</Text>
-                    </View>
-                    <View style={styles.userDistance}>
-                      <Fontiso name={statusIcon} style={styles.status1} />
-                      <Text style={{ color: COLORS.gray }}>Status</Text>
-                    </View>
-                    <View style={styles.userMethed}>
-                      <FontAwesome5
-                        name={icon}
-                        style={{
-                          color: 'black',
-                          fontSize: 25,
-                          fontWeight: '100',
-                        }}
-                      />
-                      <Text style={{ color: COLORS.gray }}>Method</Text>
-                    </View>
-                  </View>
-                </View>
-                // <View style={styles.userCard}>
-                //   <View style={styles[circleStyle]}>
-                //     <Image
-                //       source={{ uri: friend.imageUrl }}
-                //       style={styles.profilePic3}
-                //     />
-                //   </View>
-                //   <View style={styles.nameIconHolder}>
-                //     <Text style={styles.userName}>{friend.name}</Text>
-                //     <View style={styles.iconHolder}>
-                //       <FontAwesome5
-                //         name={icon}
-                //         style={{
-                //           color: 'grey',
-                //           fontSize: 25,
-                //           fontWeight: '100',
-                //         }}
-                //       />
-                //       <Fontiso name={statusIcon} style={styles[statusStyle]} />
-                //     </View>
-                //   </View>
-                // </View>
-              );
-            })}
-        </ScrollView>
+              {/* <Text style={styles.dot}>....................................................................................................</Text> */}
 
-        <View style={styles.map}>
-          <MapView
-            ref={mapRef}
-            style={styles.mapStyle}
-            region={{
-              latitude: parseFloat(event.resLat),
-              longitude: parseFloat(event.resLng),
-            }}
-            zoomControlEnabled={true}
-            showsScale={true}>
-            <Marker
-              coordinate={{
-                latitude: parseFloat(event.resLat),
-                longitude: parseFloat(event.resLng),
-              }}>
-              <Image
-                source={{ uri: event.resImageUrl }}
-                style={styles.profilePic}
-              />
-            </Marker>
-            {event.users.length > 0 &&
-              event.users.map((friend, i) => {
-                return (
-                  <>
-                    <Marker
-                      coordinate={{
-                        latitude: friend.courentLat,
-                        longitude: friend.courentLng,
-                      }}>
-                      <View style={styles.circle}>
-                        <Image
-                          source={{ uri: friend.imageUrl }}
-                          style={styles.profilePic}
-                        />
-                      </View>
-                    </Marker>
-                    <MapViewDirections
-                      origin={{
-                        latitude: parseFloat(friend.courentLat),
-                        longitude: parseFloat(friend.courentLng),
-                      }}
-                      destination={{
-                        latitude: parseFloat(event.resLat),
-                        longitude: parseFloat(event.resLng),
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                      }}
-                      apikey={GOOGLE_API_key}
-                      strokeWidth={3}
-                      strokeColor={colors[i]}
-                      mode={friend.transportMode}
-                      optimizeWaypoints={true}
-                      onReady={(result) => {
-                        mapRef.current.fitToCoordinates(result.coordinates, {
-                          edgePadding: {
-                            right: 30,
-                            left: 30,
-                            bottom: 100,
-                            top: 100,
-                          },
-                        });
+              <View style={styles.resDescription}>
+                <View style={styles.restDist}>
+                  <Text style={styles.littleHeading}>
+                    {event.rating}
+                    <FontAwesome
+                      name="star"
+                      style={{
+                        color: 'grey',
+                        fontSize: 23,
+                        fontWeight: '100',
                       }}
                     />
-                  </>
-                );
-              })}
-          </MapView>
-        </View>
+                  </Text>
 
-        {/* <View style={styles.map}></View>
+                  <Text style={styles.littleHeading}>
+                    {' '}
+                    {Math.floor(10 * 1000)}m{' '}
+                    <FontAwesome5
+                      name="walking"
+                      style={{
+                        color: 'grey',
+                        fontSize: 25,
+                        fontWeight: '100',
+                      }}
+                    />
+                  </Text>
+
+                  <Text style={styles.littleHeading}>
+                    {' '}
+                    learn more
+                    <FontAwesome5
+                      name="walking"
+                      style={{
+                        color: 'grey',
+                        fontSize: 25,
+                        fontWeight: '100',
+                      }}
+                    />
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <ScrollView
+              style={styles.friendScrollContainer}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              snapToInterval={400}
+              decelerationRate="fast">
+              {event &&
+                event.users.map((friend, index) => {
+                  let statusIcon = '';
+
+                  if (event.usersStatus[index] === 'approved') {
+                    statusIcon = 'like';
+                  } else if (event.usersStatus[index] === 'disapproved') {
+                    statusIcon = 'dislike';
+                  } else {
+                    statusIcon = 'hourglass-start';
+                  }
+                  let icon = 'walking';
+                  switch (friend.transportMode) {
+                    case 'DRIVING':
+                      icon = 'car-side';
+                      break;
+                    case 'BICYCLING':
+                      icon = 'bicycle';
+                      break;
+                    case 'TRANSIT':
+                      icon = 'train';
+                      break;
+                  }
+                  return (
+                    <View style={styles.userCard}>
+                      <View style={styles.textTiming}>
+                        <View style={styles.circle1}>
+                          <Image
+                            source={{ uri: friend.imageUrl }}
+                            style={styles.profilePic2}
+                          />
+                        </View>
+                        <View style={styles.userDistance}>
+                          <Text style={styles.restName}>{friend.name}</Text>
+                          <Text style={{ color: COLORS.gray }}>
+                            Friend name
+                          </Text>
+                        </View>
+                        <View style={styles.userDistance}>
+                          <Fontiso name={statusIcon} style={styles.status1} />
+                          <Text style={{ color: COLORS.gray }}>Status</Text>
+                        </View>
+                        <View style={styles.userMethed}>
+                          <FontAwesome5
+                            name={icon}
+                            style={{
+                              color: 'black',
+                              fontSize: 25,
+                              fontWeight: '100',
+                            }}
+                          />
+                          <Text style={{ color: COLORS.gray }}>Method</Text>
+                        </View>
+                      </View>
+                    </View>
+                    // <View style={styles.userCard}>
+                    //   <View style={styles[circleStyle]}>
+                    //     <Image
+                    //       source={{ uri: friend.imageUrl }}
+                    //       style={styles.profilePic3}
+                    //     />
+                    //   </View>
+                    //   <View style={styles.nameIconHolder}>
+                    //     <Text style={styles.userName}>{friend.name}</Text>
+                    //     <View style={styles.iconHolder}>
+                    //       <FontAwesome5
+                    //         name={icon}
+                    //         style={{
+                    //           color: 'grey',
+                    //           fontSize: 25,
+                    //           fontWeight: '100',
+                    //         }}
+                    //       />
+                    //       <Fontiso name={statusIcon} style={styles[statusStyle]} />
+                    //     </View>
+                    //   </View>
+                    // </View>
+                  );
+                })}
+            </ScrollView>
+
+            <View style={styles.map}>
+              <MapView
+                ref={mapRef}
+                style={styles.mapStyle}
+                region={{
+                  latitude: parseFloat(event.resLat),
+                  longitude: parseFloat(event.resLng),
+                }}
+                zoomControlEnabled={true}
+                showsScale={true}>
+                <Marker
+                  coordinate={{
+                    latitude: parseFloat(event.resLat),
+                    longitude: parseFloat(event.resLng),
+                  }}>
+                  <Image
+                    source={{ uri: event.resImageUrl }}
+                    style={styles.profilePic}
+                  />
+                </Marker>
+                {event.users.length > 0 &&
+                  event.users.map((friend, i) => {
+                    return (
+                      <>
+                        <Marker
+                          coordinate={{
+                            latitude: friend.courentLat,
+                            longitude: friend.courentLng,
+                          }}>
+                          <View style={styles.circle}>
+                            <Image
+                              source={{ uri: friend.imageUrl }}
+                              style={styles.profilePic}
+                            />
+                          </View>
+                        </Marker>
+                        <MapViewDirections
+                          origin={{
+                            latitude: parseFloat(friend.courentLat),
+                            longitude: parseFloat(friend.courentLng),
+                          }}
+                          destination={{
+                            latitude: parseFloat(event.resLat),
+                            longitude: parseFloat(event.resLng),
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                          }}
+                          apikey={GOOGLE_API_key}
+                          strokeWidth={3}
+                          strokeColor={colors[i]}
+                          mode={friend.transportMode}
+                          optimizeWaypoints={true}
+                          onReady={(result) => {
+                            mapRef.current.fitToCoordinates(
+                              result.coordinates,
+                              {
+                                edgePadding: {
+                                  right: 30,
+                                  left: 30,
+                                  bottom: 100,
+                                  top: 100,
+                                },
+                              }
+                            );
+                          }}
+                        />
+                      </>
+                    );
+                  })}
+              </MapView>
+            </View>
+
+            {/* <View style={styles.map}></View>
         <View style={styles.userArrivalData}></View> */}
-        {/* <TouchableOpacity
+            {/* <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => {
             acceptEvent("approved"); //660yoq user :2
@@ -305,8 +313,8 @@ export default function PreviewEvent() {
         >
           <Text>accept event </Text>
         </TouchableOpacity> */}
-      </ScrollView>
-      {/* <Text>preeview event</Text>
+          </ScrollView>
+          {/* <Text>preeview event</Text>
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
@@ -317,7 +325,9 @@ export default function PreviewEvent() {
         <Text>accept event </Text>
       </TouchableOpacity>
          */}
-    </View>
+        </View>
+      )}
+    </>
   );
 }
 

@@ -15,13 +15,15 @@ import { useContext } from 'react';
 import { UserContext } from '../../../context/usersContext';
 import { useFonts } from 'expo-font';
 import SelectButtonForTransport from './small/selectTransportMethod';
+import { EventContext } from '../../../context/eventContexts';
 const Home = () => {
   let [font] = useFonts({
     oleo: require('../../../assets/fonts/OleoScript-Regular.ttf'),
   });
 
   console.log(font);
-  const { signOut, user } = useContext(UserContext);
+  const { signOut, user, sleep } = useContext(UserContext);
+
   const [visible, setVisible] = useState(false);
 
   const navigation = useNavigation();
@@ -97,13 +99,21 @@ const Home = () => {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     style={styles.sideBarTouchable}
-                    onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
+                    onPress={() => {
+                      setVisible(false);
+
+                      navigation.navigate(ROUTES.JOIN_EVENT);
+                    }}>
                     <Text style={styles.sideBarText}>Join event</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.7}
                     style={styles.sideBarTouchable}
-                    onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
+                    onPress={() => {
+                      setVisible(false);
+
+                      navigation.navigate(ROUTES.HOME_TAB);
+                    }}>
                     <Text style={styles.sideBarText}>Home Page</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -230,15 +240,17 @@ const styles = StyleSheet.create({
   },
   userNameDiv: {
     marginTop: '20%',
-    marginLeft: '-30%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   userName: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     marginTop: '5%',
-    marginLeft: '20%',
     color: 'black',
-    position: 'absolute',
+
     shadowColor: 'white',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,

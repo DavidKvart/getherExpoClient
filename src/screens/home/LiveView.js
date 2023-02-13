@@ -442,7 +442,7 @@ export default function LiveView() {
                                 style={styles.profilePic2}
                               />
                             </View>
-                            <Text style={styles.userName}>{friend.name}</Text>
+                            <Text style={styles.usernName2}>{friend.name}</Text>
 
                             {info ? (
                               <Text style={styles.clickFor}>
@@ -480,11 +480,11 @@ export default function LiveView() {
             <Image style={styles.pic} source={{ uri: event.resImageUrl }} />
             <View style={styles.resInfoText}>
               <TouchableOpacity onPress={() => Linking.openURL(event.resLink)}>
-                <Text style={styles.userName}>{event.resName}</Text>
+                <Text style={styles.restTitle}>{event.resName}</Text>
               </TouchableOpacity>
 
               <Text
-                style={{ marginLeft: '20.5%', marginTop: '21%', fontSize: 16 }}>
+                style={{ marginLeft: '20.5%', marginTop: '10%', fontSize: 16 }}>
                 {event.cuisine[0]}, {event.cuisine[1]}
               </Text>
               <Text
@@ -540,7 +540,7 @@ export default function LiveView() {
         <View style={styles.sideBarDiv}>
           <View style={styles.sideBarContext}>
             <View style={styles.userHeader}>
-              <View style={styles.circle3}>
+              <View style={styles.circle4}>
                 <Image
                   source={{ uri: user.imageUrl }}
                   style={styles.profilePic3}
@@ -554,13 +554,21 @@ export default function LiveView() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={styles.sideBarTouchable}
-                onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
+                onPress={() => {
+                  setVisible(false);
+
+                  navigation.navigate(ROUTES.JOIN_EVENT);
+                }}>
                 <Text style={styles.sideBarText}>Join event</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={styles.sideBarTouchable}
-                onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
+                onPress={() => {
+                  setVisible(false);
+
+                  navigation.navigate(ROUTES.HOME_TAB);
+                }}>
                 <Text style={styles.sideBarText}>Home Page</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -604,7 +612,7 @@ const styles = StyleSheet.create({
     height: 75,
     width: 75,
     borderRadius: 50,
-    position: 'absolute',
+
     alignSelf: 'center',
     marginTop: 2.5,
   },
@@ -634,6 +642,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 50,
     // marginLeft: 45,
+    position: 'absolute',
     marginTop: 130,
   },
   sideBarTouchable: {
@@ -642,7 +651,10 @@ const styles = StyleSheet.create({
   },
   userNameDiv: {
     marginTop: '20%',
-    marginLeft: '-93%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sideBaruserName: {
     fontSize: 15,
@@ -708,6 +720,31 @@ const styles = StyleSheet.create({
     marginLeft: '2%',
   },
   userName: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginTop: '5%',
+    color: 'black',
+
+    shadowColor: 'white',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+  },
+  restTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginTop: '5%',
+    marginLeft: 50,
+    color: 'black',
+    display: 'flex',
+    width: '60%',
+    flexWrap: 'wrap',
+    shadowColor: 'white',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+  },
+  usernName2: {
     fontSize: 25,
     fontWeight: '600',
     marginTop: '5%',

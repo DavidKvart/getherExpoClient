@@ -1,25 +1,34 @@
-import SelectDropdown from "react-native-select-dropdown";
-import React from "react";
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, SafeAreaView, TouchableOpacity, Image, Alert } from "react-native";
+import SelectDropdown from 'react-native-select-dropdown';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from 'react-native';
 
-import { useContext } from "react";
-import { COLORS } from "../../../constants";
-import { UserContext } from "../../../../context/usersContext";
-import { EventContext } from "../../../../context/eventContexts";
+import { useContext } from 'react';
+import { COLORS } from '../../../constants';
+import { UserContext } from '../../../../context/usersContext';
+import { EventContext } from '../../../../context/eventContexts';
 const SelectButtonForTransport = ({ eventExist }) => {
-  const transportTypes = ["DRIVING", "WALKING", "BICYCLING", "TRANSIT"];
-  const [travelMode, setTravelMode] = useState("WALKING");
-  const { changeUserTransportMode } = useContext(UserContext);
+  const transportTypes = ['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT'];
+  const [travelMode, setTravelMode] = useState('WALKING');
+  const { changeUserTransportMode, user } = useContext(UserContext);
   const { event, refreshEvent } = useContext(EventContext);
 
   const submitMode = async () => {
     console.log(eventExist);
     if (eventExist == true) {
-      console.log("started");
+      console.log('started');
       await changeUserTransportMode(travelMode);
       await refreshEvent(event.roomID);
-      console.log("ended");
+      console.log('ended');
     } else {
       let answer = await changeUserTransportMode(travelMode);
     }
@@ -35,26 +44,26 @@ const SelectButtonForTransport = ({ eventExist }) => {
         buttonTextAfterSelection={(selectedItem, index) => {
           return selectedItem;
         }}
-        defaultButtonText={"driving"}
+        defaultButtonText={user.transportMode}
         dropdownStyle={{
-          width: "35%",
-          borderRadius: "5%",
+          width: '35%',
+          borderRadius: '5%',
         }}
         buttonStyle={{
-          width: "110%",
-          borderRadius: "5%",
+          width: '110%',
+          borderRadius: '5%',
         }}
         buttonTextStyle={{
           fontSize: 16,
-          textAlign: "center",
-          fontWeight: "700",
+          textAlign: 'center',
+          fontWeight: '700',
           color: COLORS.dark,
           opacity: 0.9,
         }}
         rowTextStyle={{
           fontSize: 15,
-          textAlign: "center",
-          fontWeight: "400",
+          textAlign: 'center',
+          fontWeight: '400',
           color: COLORS.dark,
           opacity: 0.9,
         }}
@@ -70,46 +79,46 @@ export default SelectButtonForTransport;
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
   },
   selectTransportDiv: {
-    display: "flex",
-    flexDirection: "row",
-    width: "90%",
-    padding: "5%",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    width: '90%',
+    padding: '5%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   selectTransportText: {
     fontSize: 16,
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+    fontWeight: 'bold',
     color: COLORS.primary,
     opacity: 0.9,
   },
   container: {
     padding: 15,
-    width: "100%",
-    position: "relative",
+    width: '100%',
+    position: 'relative',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   brandName: {
     fontSize: 32,
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+    fontWeight: 'bold',
     color: COLORS.primary,
     opacity: 0.9,
   },
   loginContinueTxt: {
     fontSize: 21,
-    textAlign: "center",
+    textAlign: 'center',
     color: COLORS.gray,
     marginBottom: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   input: {
     borderWidth: 1,
@@ -126,7 +135,7 @@ const styles = StyleSheet.create({
     height: 55,
     marginTop: 12,
     // borderRadius: '50%',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -136,50 +145,50 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   linearGradient: {
-    width: "100%",
+    width: '100%',
     // borderRadius: 50,
   },
   loginBtn: {
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
     height: 55,
   },
   loginText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   forgotPassText: {
     color: COLORS.primary,
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+    fontWeight: 'bold',
     marginTop: 15,
   },
 
   footer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
-    textAlign: "center",
-    flexDirection: "row",
+    textAlign: 'center',
+    flexDirection: 'row',
   },
   footerText: {
     color: COLORS.gray,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   signupBtn: {
     color: COLORS.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 
   wFull: {
-    width: "100%",
+    width: '100%',
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
   },
   mr7: {
@@ -188,8 +197,8 @@ const styles = StyleSheet.create({
     width: 55,
   },
   row: {
-    flexDirection: "row",
-    alignContent: "flex-start",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignContent: 'flex-start',
+    alignItems: 'center',
   },
 });

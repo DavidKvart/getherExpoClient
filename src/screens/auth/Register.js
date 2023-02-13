@@ -8,6 +8,7 @@ import {
   TextInput,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
   Image,
   Alert,
 } from 'react-native';
@@ -20,6 +21,7 @@ import { UserContext } from './../../../context/usersContext';
 import * as FileSystem from 'expo-file-system';
 import SelectDropdown from 'react-native-select-dropdown';
 import Loading from './loading';
+
 const Register = () => {
   const navigation = useNavigation();
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
@@ -111,9 +113,11 @@ const Register = () => {
     let result = await signUp(data, selectedFile, transport);
     console.log(result);
     // reset();
-    result == true
-      ? navigation.navigate(ROUTES.HOME)
-      : Alert.alert('problem on loading form');
+    result == true ? navigation.navigate(ROUTES.HOME) : handleUnsecsses();
+  };
+  const handleUnsecsses = () => {
+    setRegisterClicked(false);
+    Alert.alert('wrong passowrd or email');
   };
   return (
     <SafeAreaView style={styles.main}>
@@ -127,7 +131,10 @@ const Register = () => {
                   'Edit profile picture',
                   'A profile pic helps friends recognize you',
                   [
-                    { text: 'Choose from libary', onPress: () => pickImage() },
+                    {
+                      text: 'Choose from libary',
+                      onPress: () => pickImage(),
+                    },
                     { text: 'Take photo', onPress: () => captureImage() },
                   ]
                 )
@@ -164,146 +171,150 @@ const Register = () => {
               Get To <Text style={styles.brandName}>Gether</Text> with us
             </Text>
           </View>
-
-          <Controller
-            control={control}
-            // rules={{
-            //   required: true,
-            // }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-                placeholder="First name"
-              />
-            )}
-            name="firstName"
-          />
-          {/* {errors.firstName && <Text>{errors.firstName.message}</Text>} */}
-          <Controller
-            control={control}
-            // rules={{
-            //   required: true,
-            // }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-                placeholder="Last name"
-              />
-            )}
-            name="lastName"
-          />
-          {/* {errors.lastName && <Text>{errors.lastName.message}</Text>} */}
-          <Controller
-            control={control}
-            // rules={{
-            //   pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            //   required: true,
-            // }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-                placeholder="Email"
-              />
-            )}
-            name="email"
-          />
-          {/* {errors.email && <Text>{errors.email.message}</Text>} */}
-          <Controller
-            control={control}
-            // rules={{
-            //   pattern: /^\+\d{10}$/,
-            //   required: true,
-            // }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-                placeholder="Phone number"
-              />
-            )}
-            name="phone"
-          />
-          {/* {errors.phone && <Text>{errors.phone.message}</Text>} */}
-
-          <Controller
-            control={control}
-            // rules={{
-            //   required: true,
-            //   pattern: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-            // }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-                placeholder="Password"
-              />
-            )}
-            name="password1"
-          />
-
-          {/* {errors.password1 && <Text>{errors.password1.message}</Text>} */}
-          <Controller
-            control={control}
-            // rules={{
-            //   required: true,
-            //   pattern: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-            // }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                style={styles.input}
-                placeholder="Confirm Password"
-              />
-            )}
-            name="password2"
-          />
-          {/* {errors.password2 && <Text>{errors.password2.message}</Text>} */}
-          <View style={styles.selectTransportDiv}>
-            <Text style={styles.selectTransportText}>Pick your ride:</Text>
-            <SelectDropdown
-              data={transportTypes}
-              onSelect={(selectedItem, index) => {
-                setTransport(selectedItem);
-              }}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                return selectedItem;
-              }}
-              defaultButtonText={'DRIVING'}
-              buttonTextStyle={{
-                fontSize: 15,
-                textAlign: 'center',
-                fontWeight: '400',
-                color: COLORS.primary,
-                opacity: 0.9,
-              }}
-              dropdownStyle={{
-                borderRadius: '5%',
-              }}
-              rowTextStyle={{
-                fontSize: 15,
-                textAlign: 'center',
-                fontWeight: '400',
-                color: COLORS.dark,
-                opacity: 0.9,
-              }}
+          <ScrollView
+            style={{ height: '65%' }}
+            showsVerticalScrollIndicator={false}>
+            <Controller
+              control={control}
+              // rules={{
+              //   required: true,
+              // }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                  placeholder="First name"
+                />
+              )}
+              name="firstName"
             />
-          </View>
+            {/* {errors.firstName && <Text>{errors.firstName.message}</Text>} */}
+            <Controller
+              control={control}
+              // rules={{
+              //   required: true,
+              // }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                  placeholder="Last name"
+                />
+              )}
+              name="lastName"
+            />
+            {/* {errors.lastName && <Text>{errors.lastName.message}</Text>} */}
+            <Controller
+              control={control}
+              // rules={{
+              //   pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              //   required: true,
+              // }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                  placeholder="Email"
+                />
+              )}
+              name="email"
+            />
+            {/* {errors.email && <Text>{errors.email.message}</Text>} */}
+            <Controller
+              control={control}
+              // rules={{
+              //   pattern: /^\+\d{10}$/,
+              //   required: true,
+              // }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                  placeholder="Phone number"
+                />
+              )}
+              name="phone"
+            />
+            {/* {errors.phone && <Text>{errors.phone.message}</Text>} */}
 
+            <Controller
+              control={control}
+              // rules={{
+              //   required: true,
+              //   pattern: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
+              // }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                  placeholder="Password"
+                />
+              )}
+              name="password1"
+            />
+
+            {/* {errors.password1 && <Text>{errors.password1.message}</Text>} */}
+            <Controller
+              control={control}
+              // rules={{
+              //   required: true,
+              //   pattern: /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
+              // }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                  placeholder="Confirm Password"
+                />
+              )}
+              name="password2"
+            />
+            {/* {errors.password2 && <Text>{errors.password2.message}</Text>} */}
+
+            <View style={styles.selectTransportDiv}>
+              <Text style={styles.selectTransportText}>Pick your ride:</Text>
+              <SelectDropdown
+                data={transportTypes}
+                onSelect={(selectedItem, index) => {
+                  setTransport(selectedItem);
+                }}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  return selectedItem;
+                }}
+                defaultButtonText={'DRIVING'}
+                buttonTextStyle={{
+                  fontSize: 15,
+                  textAlign: 'center',
+                  fontWeight: '400',
+                  color: COLORS.primary,
+                  opacity: 0.9,
+                }}
+                dropdownStyle={{
+                  borderRadius: '5%',
+                }}
+                rowTextStyle={{
+                  fontSize: 15,
+                  textAlign: 'center',
+                  fontWeight: '400',
+                  color: COLORS.dark,
+                  opacity: 0.9,
+                }}
+              />
+            </View>
+            <View style={{ height: 200 }}></View>
+          </ScrollView>
           <View style={styles.loginBtnWrapper}>
             <TouchableOpacity
               disabled={RegisterClicked}
