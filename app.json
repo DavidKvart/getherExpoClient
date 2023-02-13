@@ -1,6 +1,5 @@
 {
   "expo": {
-    "permissions": ["PHOTO_LIBRARY"],
     "name": "Gether",
     "slug": "Gether",
     "version": "1.0.0",
