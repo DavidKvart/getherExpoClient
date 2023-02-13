@@ -117,7 +117,7 @@ const Register = () => {
   };
   const handleUnsecsses = () => {
     setRegisterClicked(false);
-    Alert.alert('wrong passowrd or email');
+    Alert.alert('failed to sign up');
   };
   return (
     <SafeAreaView style={styles.main}>

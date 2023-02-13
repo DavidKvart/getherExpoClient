@@ -185,14 +185,14 @@ export default function LiveView() {
           <View style={styles.smallContainer}>
             <View style={styles.headersDiv}>
               <Text style={styles.headerDisText}>DISTANCE</Text>
-              <Text style={styles.headerTimeText}>TIME</Text>
+              <Text style={styles.headerTimeText}>ESTIMATED</Text>
             </View>
             <View style={styles.infoDiv}>
               <Text style={styles.infoDisText}>
                 {parseFloat(usersTiming[friend._id].distance).toFixed(2)}
               </Text>
               <Text style={styles.infoTimeText}>
-                {parseFloat(usersTiming[friend._id].duration).toFixed(2)}
+                {getusertime(usersTiming[friend._id].duration)}
               </Text>
             </View>
           </View>
@@ -242,6 +242,13 @@ export default function LiveView() {
         </View>
       </View>
     );
+  };
+  const getusertime = (usertime) => {
+    let currentTime = new Date(Date.now());
+
+    let newTime = new Date(currentTime.getTime() + usertime * 60 * 1000);
+
+    return newTime.getHours() + ':' + newTime.getMinutes();
   };
   // ! USE EFFECTS
   useEffect(() => {
@@ -1032,7 +1039,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '65%',
-    marginLeft: '2%',
+    // marginLeft: '%',
   },
   infoDisText: {
     color: 'black',
