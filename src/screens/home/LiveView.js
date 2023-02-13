@@ -247,8 +247,21 @@ export default function LiveView() {
     let currentTime = new Date(Date.now());
 
     let newTime = new Date(currentTime.getTime() + usertime * 60 * 1000);
-
-    return newTime.getHours() + ':' + newTime.getMinutes();
+    let hours = newTime.getHours();
+    let minutes = newTime.getMinutes();
+    if (hours % 10 == hours) {
+      if (minutes % 10 == minutes) {
+        return '0' + hours + ':' + '0' + minutes;
+      } else {
+        return '0' + hours + ':' + minutes;
+      }
+    } else {
+      if (minutes % 10 == minutes) {
+        return hours + ':' + '0' + minutes;
+      } else {
+        return hours + ':' + minutes;
+      }
+    }
   };
   // ! USE EFFECTS
   useEffect(() => {
