@@ -65,7 +65,7 @@ const EventProvider = ({ children }) => {
         temp.resLink = resturant.web_url;
         temp.resLat = resturant.latitude;
         temp.resLng = resturant.longitude;
-        temp.resImageUrl = resturant.photo.images.small.url;
+        temp.resImageUrl = resturant.photo.images.original.url;
         temp.cuisine = [resturant.cuisine[0].name, resturant.cuisine[1].name];
         temp.users = temp.users.map((user) => user._id);
         temp.users.map((user, index) => {
@@ -79,7 +79,7 @@ const EventProvider = ({ children }) => {
         temp.resLink = resturant.web_url;
         temp.resLat = resturant.latitude;
         temp.resLng = resturant.longitude;
-        temp.resImageUrl = resturant.photo.images.small.url;
+        temp.resImageUrl = resturant.photo.images.original.url;
         temp.users = temp.users.map((user) => user._id);
         temp.users.map((user, index) => {
           if (index == temp.users.length - 1) temp.usersStatus.push("approved");
@@ -166,6 +166,15 @@ const EventProvider = ({ children }) => {
         }
       } else {
         let answer = await changeStatus(event._id, user._id, "disapproved");
+        setEvent({
+          resName: "",
+          rating: "",
+          resLink: "",
+          resLng: "",
+          resLat: "",
+          resImageUrl: "",
+          users: [],
+        });
         await sleep(500);
         navigation.navigate(ROUTES.HOME_TAB);
       }

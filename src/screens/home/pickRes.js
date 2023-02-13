@@ -1,44 +1,29 @@
-import React, { useState, useRef, useEffect, createRef } from 'react';
-import staticData from '../../../data';
-import MapViewDirections from 'react-native-maps-directions';
-import MapView, { Marker } from 'react-native-maps';
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Text,
-  Image,
-  Dimensions,
-  Alert,
-  Modal,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-} from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { X_RapidAPI_Key } from '@env';
-import { GOOGLE_API_key } from '@env';
+import React, { useState, useRef, useEffect, createRef } from "react";
+import staticData from "../../../data";
+import MapViewDirections from "react-native-maps-directions";
+import MapView, { Marker } from "react-native-maps";
+import { StyleSheet, View, ScrollView, Text, Image, Dimensions, Alert, Modal, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { X_RapidAPI_Key } from "@env";
+import { GOOGLE_API_key } from "@env";
 
-import { COLORS, ROUTES } from '../../constants';
-import { useNavigation } from '@react-navigation/native';
-import { EventContext } from '../../../context/eventContexts';
-import { UserContext } from '../../../context/usersContext';
-import { useContext } from 'react';
-import SelectButtonForTransport from './small/selectTransportMethod';
-import axios from 'axios';
+import { COLORS, ROUTES } from "../../constants";
+import { useNavigation } from "@react-navigation/native";
+import { EventContext } from "../../../context/eventContexts";
+import { UserContext } from "../../../context/usersContext";
+import { useContext } from "react";
+import SelectButtonForTransport from "./small/selectTransportMethod";
+import axios from "axios";
 export default function PickRes() {
   //! states
   const { event, createEvent } = useContext(EventContext);
   const { user, deviceLocaition, signOut } = useContext(UserContext);
-  const [resturant, setResturant] = useState('');
+  const [resturant, setResturant] = useState("");
   const [usersTiming, setUsersTiming] = useState([]);
-  const [data, setData] = useState('');
+  const [data, setData] = useState("");
   const [visible, setVisible] = useState(false);
   const [frindVisable, setfrindVisable] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -48,8 +33,8 @@ export default function PickRes() {
     longitude: 34.78045893833041,
     longitudeDelta: 0.028144754469394684,
   });
-  let [tempData, setTempData] = useState('');
-  const colors = ['#390099', '#9E0059', '#FFBD00', '#FF5400', '#31572C'];
+  let [tempData, setTempData] = useState("");
+  const colors = ["#390099", "#9E0059", "#FFBD00", "#FF5400", "#31572C"];
 
   //! functions
   const changeResturant = async (rest) => {
@@ -79,9 +64,7 @@ export default function PickRes() {
     lat1 = toRadians(lat1);
     lat2 = toRadians(lat2);
 
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -91,40 +74,37 @@ export default function PickRes() {
     let result = await createEvent(resturant);
     if (result == true) {
       navigation.navigate(ROUTES.LIVE_VIEW);
-      console.log('event was created');
+      console.log("event was created");
     } else {
-      Alert.alert('somthing weent wrong try again');
+      Alert.alert("somthing weent wrong try again");
     }
   };
   const getResturants = async () => {
     let bounderies = getBoundByRegion(mapCenter);
-    let URL =
-      'https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary';
+    let URL = "https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary";
     let options = {
       params: {
         bl_latitude: bounderies.minLat,
         tr_latitude: bounderies.maxLat,
         bl_longitude: bounderies.minLng,
         tr_longitude: bounderies.maxLng,
-        lunit: 'km',
+        lunit: "km",
       },
       headers: {
-        'X-RapidAPI-Key': X_RapidAPI_Key, // need to reaemove
-        'X-RapidAPI-Host': 'travel-advisor.p.rapidapi.com',
+        "X-RapidAPI-Key": X_RapidAPI_Key, // need to reaemove
+        "X-RapidAPI-Host": "travel-advisor.p.rapidapi.com",
       },
     };
     console.log(X_RapidAPI_Key);
     try {
       let result = await axios.get(URL, options);
-      console.log('--------');
+      console.log("--------");
       console.log(result.status);
       if (result.data) {
         setTempData(result.data.data);
       }
     } catch (error) {
-      Alert.alert(
-        'We have a problem with our resturant server, pls try again later'
-      );
+      Alert.alert("We have a problem with our resturant server, pls try again later");
     }
   };
   const getBoundByRegion = (region, scale = 1) => {
@@ -166,10 +146,7 @@ export default function PickRes() {
     };
 
     const latOffset = (region.latitudeDelta / 2) * scale;
-    const lngD =
-      region.longitudeDelta < -180
-        ? 360 + region.longitudeDelta
-        : region.longitudeDelta;
+    const lngD = region.longitudeDelta < -180 ? 360 + region.longitudeDelta : region.longitudeDelta;
     const lngOffset = (lngD / 2) * scale;
 
     return {
@@ -268,7 +245,8 @@ export default function PickRes() {
         onRegionChangeComplete={(e) => {
           setMapCenter(e);
         }}
-        showsScale={true}>
+        showsScale={true}
+      >
         {event.users.length > 0 ? (
           <>
             {/* print the users */}
@@ -279,19 +257,17 @@ export default function PickRes() {
                     coordinate={{
                       latitude: friend.courentLat,
                       longitude: friend.courentLng,
-                    }}>
+                    }}
+                  >
                     <View style={styles.circle}>
-                      <Image
-                        source={{ uri: friend.imageUrl }}
-                        style={styles.profilePic}
-                      />
+                      <Image source={{ uri: friend.imageUrl }} style={styles.profilePic} />
                     </View>
                   </Marker>
                 );
               })}
           </>
         ) : (
-          ''
+          ""
         )}
         {/* print the directions */}
         {event.users.length > 0 && resturant
@@ -336,7 +312,7 @@ export default function PickRes() {
                 </>
               );
             })
-          : ''}
+          : ""}
 
         {/* print the resturants */}
         {data &&
@@ -348,12 +324,13 @@ export default function PickRes() {
                   latitude: parseFloat(place.latitude),
                   longitude: parseFloat(place.longitude),
                 }}
-                pinColor={selectedIndex !== i ? '#FE7F2D' : '#8338EC'}
+                pinColor={selectedIndex !== i ? "#FE7F2D" : "#8338EC"}
                 onPress={() => {
                   scrollDiv(i);
                   setSelectedIndex(i);
                 }}
-                title={place.name}></Marker>
+                title={place.name}
+              ></Marker>
             );
           })}
       </MapView>
@@ -361,27 +338,19 @@ export default function PickRes() {
       <View style={styles.bigContainer}>
         <View
           style={{
-            display: 'flex',
-            flexDirection: 'row',
-            top: '4%',
-            justifyContent: 'space-between',
-          }}>
+            display: "flex",
+            flexDirection: "row",
+            top: "4%",
+            justifyContent: "space-between",
+          }}
+        >
           {/* friends botton */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.frindBtn}
-            onPress={() => setfrindVisable(!frindVisable)}>
-            <Image
-              source={require('../../assets/frinds.png')}
-              style={{ height: '80%', width: '80%' }}
-            />
+          <TouchableOpacity activeOpacity={0.7} style={styles.frindBtn} onPress={() => setfrindVisable(!frindVisable)}>
+            <Image source={require("../../assets/frinds.png")} style={{ height: "80%", width: "80%" }} />
           </TouchableOpacity>
           {/* create event button */}
           {resturant ? (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              style={styles.createEvent}
-              onPress={submiteRes}>
+            <TouchableOpacity activeOpacity={0.7} style={styles.createEvent} onPress={submiteRes}>
               <Text style={styles.createEventText}>create event</Text>
             </TouchableOpacity>
           ) : (
@@ -392,10 +361,7 @@ export default function PickRes() {
           )}
 
           {/* side bar button  */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.navBtn}
-            onPress={() => setVisible(true)}>
+          <TouchableOpacity activeOpacity={0.7} style={styles.navBtn} onPress={() => setVisible(true)}>
             <View style={styles.line2} />
             <View style={styles.line2} />
             <View style={styles.line2} />
@@ -404,58 +370,43 @@ export default function PickRes() {
 
         {/* friends small card */}
         {frindVisable ? (
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            snapToInterval={400}
-            decelerationRate="fast"
-            contentContainerStyle={styles.scrollContainer}>
+          <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} snapToInterval={400} decelerationRate="fast" contentContainerStyle={styles.scrollContainer}>
             <View style={styles.cardContainer}>
               {event.users.length > 0 &&
                 event.users.map((friend) => {
-                  let icon = 'walking';
+                  let icon = "walking";
                   switch (friend.transportMode) {
-                    case 'DRIVING':
-                      icon = 'car-side';
+                    case "DRIVING":
+                      icon = "car-side";
                       break;
-                    case 'BICYCLING':
-                      icon = 'bicycle';
+                    case "BICYCLING":
+                      icon = "bicycle";
                       break;
-                    case 'TRANSIT':
-                      icon = 'train';
+                    case "TRANSIT":
+                      icon = "train";
                       break;
                   }
                   return (
                     <View style={styles.userCard}>
                       <View style={styles.textTiming}>
                         <View style={styles.circle1}>
-                          <Image
-                            source={{ uri: friend.imageUrl }}
-                            style={styles.profilePic2}
-                          />
+                          <Image source={{ uri: friend.imageUrl }} style={styles.profilePic2} />
                         </View>
                         <View style={styles.userDistance}>
-                          <Text style={styles.restName}>
-                            {parseFloat(
-                              usersTiming[friend._id]?.distance
-                            ).toFixed(2)}{' '}
-                            km
-                          </Text>
+                          <Text style={styles.restName}>{parseFloat(usersTiming[friend._id]?.distance).toFixed(2)} km</Text>
                           <Text style={{ color: COLORS.gray }}>Distance</Text>
                         </View>
                         <View style={styles.userDistance}>
-                          <Text style={styles.restName}>
-                            {parseInt(usersTiming[friend._id]?.duration)} min
-                          </Text>
+                          <Text style={styles.restName}>{parseInt(usersTiming[friend._id]?.duration)} min</Text>
                           <Text style={{ color: COLORS.gray }}>Time</Text>
                         </View>
                         <View style={styles.userMethed}>
                           <FontAwesome5
                             name={icon}
                             style={{
-                              color: 'black',
+                              color: "black",
                               fontSize: 25,
-                              fontWeight: '100',
+                              fontWeight: "100",
                             }}
                           />
                           <Text style={{ color: COLORS.gray }}>Method</Text>
@@ -467,15 +418,13 @@ export default function PickRes() {
             </View>
           </ScrollView>
         ) : (
-          ''
+          ""
         )}
       </View>
 
       {/* resturant cards drag */}
       <GestureDetector gesture={gesture}>
-        <Animated.View
-          showsVerticalScrollIndicator={false}
-          style={[styles.info, rBottomSheetStyle]}>
+        <Animated.View showsVerticalScrollIndicator={false} style={[styles.info, rBottomSheetStyle]}>
           <View style={styles.line} />
           <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
             {/* places cards */}
@@ -488,62 +437,57 @@ export default function PickRes() {
                       <Image
                         style={styles.pic}
                         source={{
-                          uri: 'https://res.cloudinary.com/dfcmf6gbn/image/upload/v1675162489/thbiktvn9wvnlch4a3dx.jpg',
+                          uri: "https://res.cloudinary.com/dfcmf6gbn/image/upload/v1675162489/thbiktvn9wvnlch4a3dx.jpg",
                         }}
                       />
                       <View style={styles.dits}>
                         <Text style={styles.restName}>meat bar</Text>
                         <View style={styles.typeButton}>
-                          <Text style={styles.restType}>
-                            {/* {place?.cuisine[1]?.name} , {place?.cuisine[2]?.name}{" "} */}
-                          </Text>
+                          <Text style={styles.restType}>{/* {place?.cuisine[1]?.name} , {place?.cuisine[2]?.name}{" "} */}</Text>
                           <View style={styles.buttonContain}>
-                            <TouchableWithoutFeedback
-                              onPress={() => changeResturant(place)}>
+                            <TouchableWithoutFeedback onPress={() => changeResturant(place)}>
                               <FontAwesome5
                                 name="directions"
                                 style={{
-                                  color: 'grey',
+                                  color: "grey",
                                   fontSize: 23,
-                                  fontWeight: '100',
-                                  marginTop: '-2%',
+                                  fontWeight: "100",
+                                  marginTop: "-2%",
                                 }}
                               />
                             </TouchableWithoutFeedback>
                           </View>
                         </View>
-                        <Text style={styles.dot}>
-                          ....................................................................................................
-                        </Text>
+                        <Text style={styles.dot}>....................................................................................................</Text>
                         <View style={styles.Dist}>
                           <Text style={styles.restDist}>
                             {/* {place.rating}{" "} */}
                             <FontAwesome
                               name="star"
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 fontSize: 23,
-                                fontWeight: '100',
+                                fontWeight: "100",
                               }}
                             />
-                            {'                 '}
+                            {"                 "}
                             {/* {place.open_now_text}{" "} */}
                             <FontAwesome5
                               name="clock"
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 fontSize: 25,
-                                fontWeight: '100',
+                                fontWeight: "100",
                               }}
                             />
-                            {'               '}
+                            {"               "}
                             {/* {Math.floor(place.average * 1000)}m{" "} */}
                             <FontAwesome5
                               name="walking"
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 fontSize: 25,
-                                fontWeight: '100',
+                                fontWeight: "100",
                               }}
                             />
                           </Text>
@@ -554,75 +498,61 @@ export default function PickRes() {
                 } else {
                   return (
                     //real resturant
-                    <View
-                      style={styles.card}
-                      key={place.location_id}
-                      ref={elRefs[i]}>
-                      {place?.photo?.images?.original && (
-                        <Image
-                          style={styles.pic}
-                          source={{ uri: place.photo.images.original.url }}
-                        />
-                      )}
+                    <View style={styles.card} key={place.location_id} ref={elRefs[i]}>
+                      {place?.photo?.images?.original && <Image style={styles.pic} source={{ uri: place.photo.images.original.url }} />}
 
                       <View style={styles.dits}>
-                        <Text style={styles.restName}>
-                          {place?.name && place.name}
-                        </Text>
+                        <Text style={styles.restName}>{place?.name && place.name}</Text>
                         <View style={styles.typeButton}>
                           <Text style={styles.restType}>
                             {place?.cuisine[1]?.name && place?.cuisine[1]?.name}
-                            {', '}
-                            {place?.cuisine[2]?.name &&
-                              place?.cuisine[2]?.name}{' '}
+                            {", "}
+                            {place?.cuisine[2]?.name && place?.cuisine[2]?.name}{" "}
                           </Text>
                           <View style={styles.buttonContain}>
-                            <TouchableWithoutFeedback
-                              onPress={() => changeResturant(place)}>
+                            <TouchableWithoutFeedback onPress={() => changeResturant(place)}>
                               <FontAwesome5
                                 name="directions"
                                 style={{
-                                  color: 'grey',
+                                  color: "grey",
                                   fontSize: 23,
-                                  fontWeight: '100',
-                                  marginTop: '-2%',
+                                  fontWeight: "100",
+                                  marginTop: "-2%",
                                 }}
                               />
                             </TouchableWithoutFeedback>
                           </View>
                         </View>
-                        <Text style={styles.dot}>
-                          ....................................................................................................
-                        </Text>
+                        <Text style={styles.dot}>....................................................................................................</Text>
                         <View style={styles.Dist}>
                           <Text style={styles.restDist}>
-                            {place?.rating && place.rating}{' '}
+                            {place?.rating && place.rating}{" "}
                             <FontAwesome
                               name="star"
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 fontSize: 23,
-                                fontWeight: '100',
+                                fontWeight: "100",
                               }}
                             />
-                            {'                 '}
-                            {place?.open_now_text && place.open_now_text}{' '}
+                            {"                 "}
+                            {place?.open_now_text && place.open_now_text}{" "}
                             <FontAwesome5
                               name="clock"
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 fontSize: 25,
-                                fontWeight: '100',
+                                fontWeight: "100",
                               }}
                             />
-                            {'               '}
-                            {Math.floor(place.average * 1000)}m{' '}
+                            {"               "}
+                            {Math.floor(place.average * 1000)}m{" "}
                             <FontAwesome5
                               name="walking"
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 fontSize: 25,
-                                fontWeight: '100',
+                                fontWeight: "100",
                               }}
                             />
                           </Text>
@@ -637,57 +567,36 @@ export default function PickRes() {
       </GestureDetector>
 
       {/* the side bar */}
-      <Modal
-        visible={visible}
-        animationType="fade"
-        transparent={true}
-        style={styles.modalStyle}>
+      <Modal visible={visible} animationType="fade" transparent={true} style={styles.modalStyle}>
         <View style={styles.sideBarDiv}>
           <View style={styles.sideBarContext}>
             <View style={styles.userHeader}>
               <View style={styles.circle3}>
-                <Image
-                  source={{ uri: user.imageUrl }}
-                  style={styles.profilePic3}
-                />
+                <Image source={{ uri: user.imageUrl }} style={styles.profilePic3} />
               </View>
             </View>
             <View style={styles.userNameDiv}>
               <Text style={styles.userName}>{user.name}</Text>
             </View>
             <View style={styles.sideBarButtons}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable}
-                onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.JOIN_EVENT)}>
                 <Text style={styles.sideBarText}>Join event</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable}
-                onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable} onPress={() => navigation.navigate(ROUTES.HOME_TAB)}>
                 <Text style={styles.sideBarText}>Home Page</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.sideBarTouchable}>
                 <Text style={styles.sideBarText}>future event</Text>
               </TouchableOpacity>
               <View style={{}}>
                 <SelectButtonForTransport />
               </View>
-              <TouchableOpacity
-                onPress={signOut}
-                activeOpacity={0.7}
-                style={styles.sideBarTouchable && { marginTop: '70%' }}>
+              <TouchableOpacity onPress={signOut} activeOpacity={0.7} style={styles.sideBarTouchable && { marginTop: "70%" }}>
                 <Text style={styles.sideBarText}>sign out</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.navBtnModal}
-            onPress={() => setVisible(false)}>
+          <TouchableOpacity activeOpacity={0.7} style={styles.navBtnModal} onPress={() => setVisible(false)}>
             <View style={styles.line2} />
             <View style={styles.line2} />
             <View style={styles.line2} />
@@ -699,178 +608,178 @@ export default function PickRes() {
 }
 
 //! style ------------------------------------------------------
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   textTiming: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: '50%',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "50%",
   },
   resMarkerDiv: {
-    display: 'flex',
+    display: "flex",
 
-    flexDirection: 'row',
-    color: '#FB8500',
+    flexDirection: "row",
+    color: "#FB8500",
   },
   map: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   info: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     height: SCREEN_HEIGHT / 2,
-    alignSelf: 'center',
-    width: '100%',
-    position: 'absolute',
-    marginTop: '155%',
-    borderRadius: '30%',
+    alignSelf: "center",
+    width: "100%",
+    position: "absolute",
+    marginTop: "155%",
+    borderRadius: "30%",
   },
   card: {
     marginTop: 30,
-    alignSelf: 'center',
+    alignSelf: "center",
     height: 270,
-    width: '94%',
-    shadowColor: '#171717',
+    width: "94%",
+    shadowColor: "#171717",
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
-    borderTopLeftRadius: '8%',
-    borderTopRightRadius: '8%',
+    borderTopLeftRadius: "8%",
+    borderTopRightRadius: "8%",
   },
   dits: {
-    backgroundColor: 'white',
-    borderBottomLeftRadius: '8%',
-    borderBottomRightRadius: '8%',
+    backgroundColor: "white",
+    borderBottomLeftRadius: "8%",
+    borderBottomRightRadius: "8%",
   },
   Dist: {
-    backgroundColor: 'white',
-    borderBottomLeftRadius: '8%',
-    borderBottomRightRadius: '8%',
-    marginBottom: '-3%',
+    backgroundColor: "white",
+    borderBottomLeftRadius: "8%",
+    borderBottomRightRadius: "8%",
+    marginBottom: "-3%",
   },
   line: {
     width: 75,
     height: 4,
-    backgroundColor: 'grey',
-    alignSelf: 'center',
+    backgroundColor: "grey",
+    alignSelf: "center",
     marginVertical: 15,
     borderRadius: 2,
   },
   pic: {
-    height: '50%',
-    width: '100%',
-    borderTopLeftRadius: '8%',
-    borderTopRightRadius: '8%',
+    height: "50%",
+    width: "100%",
+    borderTopLeftRadius: "8%",
+    borderTopRightRadius: "8%",
   },
   restName: {
     fontSize: 20,
-    fontWeight: '600',
-    marginTop: '2%',
-    marginLeft: '2%',
+    fontWeight: "600",
+    marginTop: "2%",
+    marginLeft: "2%",
   },
   restType: {
     fontSize: 18,
-    fontWeight: '200',
-    marginLeft: '2%',
+    fontWeight: "200",
+    marginLeft: "2%",
     // marginTop: '1%',
-    borderBottomColor: 'white',
-    borderStyle: 'dotted',
-    width: '65%',
+    borderBottomColor: "white",
+    borderStyle: "dotted",
+    width: "65%",
   },
   restDist: {
     fontSize: 18,
-    fontWeight: '200',
-    marginLeft: '2%',
-    color: 'grey',
+    fontWeight: "200",
+    marginLeft: "2%",
+    color: "grey",
   },
   dot: {
-    color: 'grey',
-    marginBottom: '1%',
+    color: "grey",
+    marginBottom: "1%",
   },
   circle: {
     height: 55,
     width: 55,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 50,
   },
   profilePic: {
     height: 48,
     width: 48,
     borderRadius: 50,
-    position: 'absolute',
+    position: "absolute",
     marginLeft: 3,
     marginTop: 3,
   },
   typeButton: {
-    display: 'flex',
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: '20%',
-    marginBottom: '1%',
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: "20%",
+    marginBottom: "1%",
   },
   buttonContain: {
-    width: '9%',
-    backgroundColor: 'transparent',
+    width: "9%",
+    backgroundColor: "transparent",
   },
   scrollContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    marginTop: '2%',
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginTop: "2%",
   },
   cardContainer: {
-    flexDirection: 'row',
-    width: '100%',
+    flexDirection: "row",
+    width: "100%",
     height: 70,
     marginLeft: 39,
   },
   userCard: {
     width: 390,
     height: 70,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginRight: 10,
-    borderRadius: '8%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '100%',
+    borderRadius: "8%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "100%",
   },
   userName: {
     fontSize: 15,
-    fontWeight: '600',
-    marginTop: '5%',
-    marginLeft: '20%',
-    color: 'black',
-    position: 'absolute',
-    shadowColor: 'white',
+    fontWeight: "600",
+    marginTop: "5%",
+    marginLeft: "20%",
+    color: "black",
+    position: "absolute",
+    shadowColor: "white",
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
   arrivaldata: {
     fontSize: 15,
-    fontWeight: '400',
-    marginLeft: '30%',
-    color: 'black',
+    fontWeight: "400",
+    marginLeft: "30%",
+    color: "black",
   },
   profilePic2: {
     height: 50,
     width: 50,
     borderRadius: 50,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: 3,
   },
   bigContainer: {
-    height: '14.5%',
-    width: '100%',
-    position: 'absolute',
+    height: "14.5%",
+    width: "100%",
+    position: "absolute",
     marginTop: 50,
   },
   circle1: {
@@ -878,7 +787,7 @@ const styles = StyleSheet.create({
     width: 55,
     backgroundColor: COLORS.primary,
     borderRadius: 50,
-    shadowColor: 'black',
+    shadowColor: "black",
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
@@ -886,49 +795,49 @@ const styles = StyleSheet.create({
   line2: {
     width: 35,
     height: 4,
-    backgroundColor: 'grey',
-    alignSelf: 'center',
+    backgroundColor: "grey",
+    alignSelf: "center",
     marginVertical: 2,
     borderRadius: 2,
   },
   navBtn: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '15%',
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "15%",
     height: 40,
-    marginRight: '4.35%',
+    marginRight: "4.35%",
     // marginLeft: '61%',
-    top: '-3%',
-    backgroundColor: 'white',
-    borderRadius: '8%',
+    top: "-3%",
+    backgroundColor: "white",
+    borderRadius: "8%",
   },
   frindBtn: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '15%',
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "15%",
     height: 40,
-    marginLeft: '4.7%',
-    top: '-3%',
-    backgroundColor: 'white',
-    borderRadius: '8%',
+    marginLeft: "4.7%",
+    top: "-3%",
+    backgroundColor: "white",
+    borderRadius: "8%",
   },
   navBtnModal: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '15%',
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "15%",
     height: 40,
-    marginLeft: '40.65%',
-    top: '12.7%',
-    backgroundColor: 'white',
-    borderRadius: '8%',
+    marginLeft: "40.65%",
+    top: "12.7%",
+    backgroundColor: "white",
+    borderRadius: "8%",
   },
   circle3: {
     height: 85,
     width: 85,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 50,
     // marginLeft: 45,
     marginTop: 130,
@@ -937,17 +846,17 @@ const styles = StyleSheet.create({
     height: 75,
     width: 75,
     borderRadius: 50,
-    position: 'absolute',
-    alignSelf: 'center',
+    position: "absolute",
+    alignSelf: "center",
     marginTop: 2.5,
   },
   userName: {
     fontSize: 25,
-    fontWeight: '600',
-    marginTop: '5%',
-    color: 'black',
-    position: 'absolute',
-    shadowColor: 'white',
+    fontWeight: "600",
+    marginTop: "5%",
+    color: "black",
+    position: "absolute",
+    shadowColor: "white",
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
@@ -955,78 +864,78 @@ const styles = StyleSheet.create({
   sideBarText: {
     color: COLORS.gray,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalStyle: {
-    backfaceVisibility: 'visible',
-    backgroundColor: 'transparent',
-    width: '50%',
+    backfaceVisibility: "visible",
+    backgroundColor: "transparent",
+    width: "50%",
   },
   sideBarDiv: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'row',
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "row",
   },
   sideBarContext: {
-    backgroundColor: 'white',
-    width: '40%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    backgroundColor: "white",
+    width: "40%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   userHeader: {
     backgroundColor: COLORS.primary,
-    height: '18.2%',
-    width: '100%',
-    alignItems: 'center',
+    height: "18.2%",
+    width: "100%",
+    alignItems: "center",
   },
   userNameDiv: {
-    marginTop: '20%',
-    marginLeft: '-30%',
+    marginTop: "20%",
+    marginLeft: "-30%",
   },
   sideBarButtons: {
-    marginTop: '50%',
-    marginRight: '8%',
-    width: '80%',
+    marginTop: "50%",
+    marginRight: "8%",
+    width: "80%",
   },
   sideBarTouchable: {
-    height: '13%',
-    width: '100%',
+    height: "13%",
+    width: "100%",
   },
   createEventText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   createEvent: {
-    backgroundColor: '#70e000',
-    marginTop: '-3%',
-    width: '50%',
-    borderRadius: '50%',
+    backgroundColor: "#70e000",
+    marginTop: "-3%",
+    width: "50%",
+    borderRadius: "50%",
     height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   userDistance: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    height: '70%',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    height: "70%",
     borderRightWidth: 2,
     borderRightColor: COLORS.grayLight,
-    width: '50%',
+    width: "50%",
   },
   userMethed: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    height: '70%',
-    width: '50%',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    height: "70%",
+    width: "50%",
   },
 });
