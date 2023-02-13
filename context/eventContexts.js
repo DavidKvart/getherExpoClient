@@ -221,13 +221,16 @@ const EventProvider = ({ children }) => {
   const removeUser = async (userID, roomID) => {
     let url = `https://gethersocketserver.onrender.com/events` + "/remove/" + roomID;
     let result = await axios.post(url, { userID });
-    if (result.body == "couldnt find user" || result.body == "couldnt find event") {
+    console.log(result.data);
+    if (result.data == "couldnt find user" || result.data == "couldnt find event") {
       console.log("couldnt finish the deletion");
       return false;
     } else {
+      console.log("userID: " + userID);
+      console.log("user>_id: " + user._id);
       if (userID == user._id) {
         setEvent(result.data);
-        navigation.navigate(ROUTES.HOME);
+        navigation.navigate(ROUTES.HOME_TAB);
         Alert.alert("You are no longer a participant in this event ");
         return true;
       } else {
