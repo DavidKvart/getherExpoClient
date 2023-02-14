@@ -340,12 +340,13 @@ export default function LiveView() {
                         coordinate={{
                           latitude: parseFloat(friend.courentLat),
                           longitude: parseFloat(friend.courentLng),
-                        }}
-                        anchor={{ x: 0.5, y: 1 }}>
-                        <Image
-                          source={{ uri: friend.imageUrl }}
-                          style={styles.profilePic}
-                        />
+                        }}>
+                        <View style={styles.circle}>
+                          <Image
+                            source={{ uri: friend.imageUrl }}
+                            style={styles.profilePic}
+                          />
+                        </View>
                       </Marker>
                       <MapViewDirections
                         origin={{
@@ -384,12 +385,13 @@ export default function LiveView() {
               coordinate={{
                 latitude: parseFloat(event.resLat),
                 longitude: parseFloat(event.resLng),
-              }}
-              anchor={{ x: 0.5, y: 1 }}>
-              <Image
-                source={{ uri: event.resImageUrl }}
-                style={styles.profilePic}
-              />
+              }}>
+              <View style={styles.circle}>
+                <Image
+                  source={{ uri: event.resImageUrl }}
+                  style={styles.profilePic}
+                />
+              </View>
             </Marker>
           </MapView>
 
@@ -1120,6 +1122,12 @@ const styles = StyleSheet.create({
     marginTop: '-3.5%',
     marginBottom: '-2%',
     color: 'grey',
+  },
+  circle: {
+    height: 55,
+    width: 55,
+    backgroundColor: 'white',
+    borderRadius: 50,
   },
 });
 
